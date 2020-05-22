@@ -1,10 +1,10 @@
 # HW-Lab-Project
 
 ## Members
+- David Tumcharoen
 - Melvin Macaranas
-- Kongtap Arun...
+- Kongtap Arun
 - Kritsana Khankaew
 - Kantorn ...
-- David ...
 
 ## Overview of Project
