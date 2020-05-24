@@ -22,7 +22,7 @@ module top(
     wire [10:0] x;  // current pixel x position: 10-bit value: 0-2047
     wire [9:0] y;  // current pixel y position:  9-bit value: 0-1023
     wire active;   // high during active pixel drawing
-    reg state;    // main menu & game state
+    reg isMainMenu = 1;    // main menu & game state
 
     vga800x600 display (
         .i_clk(CLK), 
@@ -69,14 +69,20 @@ module top(
     begin
         if (btnU)
         begin
-            state <= ~state;
+            isMainMenu <= 0;
+        end
+        else if (rst)
+        begin
+            isMainMenu <= 1;
         end
         
     end
     
+    
+    
     always @ (posedge CLK)
     begin
-        if (state == 0) begin
+        if (isMainMenu == 1) begin
             address <= y * SCREEN_WIDTH + x;
     
             if (active)
@@ -88,7 +94,7 @@ module top(
             VGA_G <= colour[7:4];
             VGA_B <= colour[3:0];
         end
-        else if (state == 1) begin
+        else if (isMainMenu == 0) begin
             VGA_R <= (y < 200 && y > 0) ? 4'hF:4'h0;
             VGA_G <= (y < 400 && y > 200) ? 4'hF:4'h0;
             VGA_B <= (y < 600 && y > 400) ? 4'hF:4'h0;
