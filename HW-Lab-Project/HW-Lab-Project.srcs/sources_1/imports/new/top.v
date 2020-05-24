@@ -4,6 +4,9 @@ module top(
     input wire CLK,             // board clock: 100 MHz on Arty/Basys3/Nexys
     input wire RST_BTN,         // reset button
     input wire btnU,            // up button
+    input wire btnD,            // down button
+    input wire btnL,            // left button
+    input wire btnR,            // right button
     output wire VGA_HS_O,       // horizontal sync output
     output wire VGA_VS_O,       // vertical sync output
     output reg [3:0] VGA_R,     // 4-bit VGA red output
@@ -22,7 +25,6 @@ module top(
     wire [10:0] x;  // current pixel x position: 10-bit value: 0-2047
     wire [9:0] y;  // current pixel y position:  9-bit value: 0-1023
     wire active;   // high during active pixel drawing
-    reg isMainMenu = 1;    // main menu & game state
 
     vga800x600 display (
         .i_clk(CLK), 
@@ -65,21 +67,58 @@ module top(
         $readmemh("basys_palette.mem", palette);  // bitmap palette to load
     end
     
+    reg isMainMenu = 0; //change to 1 if project finish 
+    reg isActionSelect = 0;
+    reg isFight = 0;
+    reg isDodge = 0;
+    
+    reg selectedAction = 0;
+    
     always @ (posedge CLK)
     begin
-        if (btnU)
+        if (isMainMenu & btnU)
         begin
             isMainMenu <= 0;
+            isActionSelect <= 1;
+        end
+        else if (isActionSelect)
+        begin
+            if (btnR & selectedAction < 4)
+            begin
+                selectedAction = selectedAction + 1;
+            end
+            if (btnL & selectedAction > 1)
+            begin
+                selectedAction = selectedAction - 1;
+            end
         end
         else if (rst)
         begin
             isMainMenu <= 1;
+            isActionSelect <= 0;
+            isFight <= 0;
+            isDodge <= 0;
         end
         
     end
     
+    wire [11:0] actsel_x1, actsel_x2, actsel_y1, actsel_y2;
+    wire actionSelectSq;
     
-    
+    ActionSelect #(.D_WIDTH(SCREEN_WIDTH), .D_HEIGHT(SCREEN_HEIGHT)) actionSelect (
+        .i_clk(CLK), 
+        .i_ani_stb(pix_stb),
+        .i_rst(rst),
+        .i_animate(isActionSelect),
+        .i_selectedAction(selectedAction),
+        .o_x1(actsel_x1),
+        .o_x2(actsel_x2),
+        .o_y1(actsel_y1),
+        .o_y2(actsel_y2)
+    );
+
+    assign actionSelectSq = ((x > actsel_x1) & (y > actsel_y1) & (x < actsel_x2) & (y < actsel_y2)) ? 1 : 0;
+
     always @ (posedge CLK)
     begin
         if (isMainMenu == 1) begin
@@ -95,9 +134,9 @@ module top(
             VGA_B <= colour[3:0];
         end
         else if (isMainMenu == 0) begin
-            VGA_R <= (y < 200 && y > 0) ? 4'hF:4'h0;
-            VGA_G <= (y < 400 && y > 200) ? 4'hF:4'h0;
-            VGA_B <= (y < 600 && y > 400) ? 4'hF:4'h0;
+            VGA_R <= (actionSelectSq) ? 4'hF:4'h0;
+            VGA_G <= (actionSelectSq) ? 4'hF:4'h0;
+            VGA_B <= (actionSelectSq) ? 4'hF:4'h0;
         end
     end
 endmodule
