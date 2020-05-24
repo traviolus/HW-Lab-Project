@@ -4,9 +4,9 @@
 ## - rename the used ports (in each line, after get_ports) according to the top level signal names in the project
 
 ## Clock signal
-set_property PACKAGE_PIN W5 [get_ports clk]
-	set_property IOSTANDARD LVCMOS33 [get_ports clk]
-	create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
+set_property PACKAGE_PIN W5 [get_ports CLK]
+	set_property IOSTANDARD LVCMOS33 [get_ports CLK]
+	create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports CLK]
 
 ## Use BTNC as Reset Button (active high)
 set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports {RST_BTN}];
@@ -113,8 +113,8 @@ set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports {RST_BTN}];
 ##Buttons
 #set_property PACKAGE_PIN U18 [get_ports btnC]
 	#set_property IOSTANDARD LVCMOS33 [get_ports btnC]
-#set_property PACKAGE_PIN T18 [get_ports btnU]
-	#set_property IOSTANDARD LVCMOS33 [get_ports btnU]
+set_property PACKAGE_PIN T18 [get_ports btnU]
+	set_property IOSTANDARD LVCMOS33 [get_ports btnU]
 #set_property PACKAGE_PIN W19 [get_ports btnL]
 	#set_property IOSTANDARD LVCMOS33 [get_ports btnL]
 #set_property PACKAGE_PIN T17 [get_ports btnR]
