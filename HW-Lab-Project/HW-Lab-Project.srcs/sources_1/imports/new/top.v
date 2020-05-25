@@ -68,10 +68,10 @@ module top(
         $readmemh("basys_palette.mem", palette);  // bitmap palette to load
     end
     
-    reg isMainMenu = 1; //change to 1 if project finish 
+    reg isMainMenu = 0; //change to 1 if project finish 
     reg isActionSelect = 0; //change to 0 if project finish 
     reg isFight = 0; //change to 0 if project finish 
-    reg isDodge = 0; //change to 0 if project finish 
+    reg isDodge = 1; //change to 0 if project finish 
     
     reg de = 1;
     reg [6:0] hpHero = 100;
@@ -87,8 +87,6 @@ module top(
             begin
                 isMainMenu = 0;
                 isActionSelect = 1;
-                isFight = 0;
-                isDodge = 0;
                 selectedAction = 0;
             end
             else if (isActionSelect)
@@ -103,20 +101,15 @@ module top(
                 end
                 else if (btnU & selectedAction == 0)
                 begin
-                    isMainMenu = 0;
                     isActionSelect = 0;
                     isFight = 1;
-                    isDodge = 0;
-                    selectedAction = 0;
                 end
             end
             else if (isFight)
             begin
                 if (btnU)
                 begin
-                    hpEnemy <= hpEnemy - 10;
-                    isMainMenu = 0;
-                    isActionSelect = 0;
+                    hpEnemy <= hpEnemy - 10; 
                     isFight = 0;
                     isDodge = 1;
                 end
@@ -221,6 +214,53 @@ module top(
     
     //Bullet dodge
     
+    wire [11:0] dft_x1, dft_x2, dft_y1, dft_y2;
+    wire [11:0] dfb_x1, dfb_x2, dfb_y1, dfb_y2;
+    wire [11:0] dfl_x1, dfl_x2, dfl_y1, dfl_y2;
+    wire [11:0] dfr_x1, dfr_x2, dfr_y1, dfr_y2;
+    wire dodgeFrameTopSq, dodgeFrameBottomSq, dodgeFrameLeftSq, dodgeFrameRightSq, dodgeFrameSq;
+    
+    square #(.H_WIDTH(158), .H_HEIGHT(4), .IX(400), .IY(96)) dodgeFrameTop (
+        .i_show(isDodge),
+        .o_x1(dft_x1),
+        .o_x2(dft_x2),
+        .o_y1(dft_y1),
+        .o_y2(dft_y2)
+    );
+    square #(.H_WIDTH(158), .H_HEIGHT(4), .IX(400), .IY(404)) dodgeFrameBottom (
+        .i_show(isDodge),
+        .o_x1(dfb_x1),
+        .o_x2(dfb_x2),
+        .o_y1(dfb_y1),
+        .o_y2(dfb_y2)
+    );
+    square #(.H_WIDTH(4), .H_HEIGHT(158), .IX(246), .IY(250)) dodgeFrameLeft (
+        .i_show(isDodge),
+        .o_x1(dfl_x1),
+        .o_x2(dfl_x2),
+        .o_y1(dfl_y1),
+        .o_y2(dfl_y2)
+    );
+    square #(.H_WIDTH(4), .H_HEIGHT(158), .IX(554), .IY(250)) dodgeFrameRight (
+        .i_show(isDodge),
+        .o_x1(dfr_x1),
+        .o_x2(dfr_x2),
+        .o_y1(dfr_y1),
+        .o_y2(dfr_y2)
+    );
+    
+    wire [11:0] dft_x1, dft_x2, dft_y1, dft_y2;
+    wire [11:0] dfb_x1, dfb_x2, dfb_y1, dfb_y2;
+    wire [11:0] dfl_x1, dfl_x2, dfl_y1, dfl_y2;
+    wire [11:0] dfr_x1, dfr_x2, dfr_y1, dfr_y2;
+    wire dodgeFrameTopSq, dodgeFrameBottomSq, dodgeFrameLeftSq, dodgeFrameRightSq, dodgeFrameSq;
+    
+    assign dodgeFrameTopSq = ((x > dft_x1) & (y > dft_y1) & (x < dft_x2) & (y < dft_y2)) ? 1 : 0;
+    assign dodgeFrameBottomSq = ((x > dfb_x1) & (y > dfb_y1) & (x < dfb_x2) & (y < dfb_y2)) ? 1 : 0;
+    assign dodgeFrameLeftSq = ((x > dfl_x1) & (y > dfl_y1) & (x < dfl_x2) & (y < dfl_y2)) ? 1 : 0;
+    assign dodgeFrameRightSq = ((x > dfr_x1) & (y > dfr_y1) & (x < dfr_x2) & (y < dfr_y2)) ? 1 : 0;
+    assign dodgeFrameSq = (dodgeFrameTopSq | dodgeFrameBottomSq | dodgeFrameLeftSq | dodgeFrameRightSq) ? 1 : 0;    
+    
     // Display
     always @ (posedge CLK)
     begin
@@ -237,9 +277,9 @@ module top(
             VGA_B <= colour[3:0];
         end
         else if (isMainMenu == 0) begin
-            VGA_R <= (actionSelectCr | hpEnemySq | moveFightGaugeSq) ? 4'hF:4'h0;
-            VGA_G <= (actionSelectCr | hpHeroSq | fixFightGaugeSq | moveFightGaugeSq) ? 4'hF:4'h0;
-            VGA_B <= (moveFightGaugeSq) ? 4'hF:4'h0;
+            VGA_R <= (actionSelectCr | hpEnemySq | moveFightGaugeSq | dodgeFrameSq) ? 4'hF:4'h0;
+            VGA_G <= (actionSelectCr | hpHeroSq | fixFightGaugeSq | moveFightGaugeSq | dodgeFrameSq) ? 4'hF:4'h0;
+            VGA_B <= (moveFightGaugeSq | dodgeFrameSq) ? 4'hF:4'h0;
         end
     end
 endmodule
