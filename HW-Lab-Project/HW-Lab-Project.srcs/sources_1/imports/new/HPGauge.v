@@ -4,9 +4,7 @@ module HPGauge #(
     //H_WIDTH=500,
     H_HEIGHT=10,
     IX=0,         // initial horizontal position of square centre
-    IY=0,         // initial vertical position of square centre
-    D_WIDTH=640,    // width of display
-    D_HEIGHT=480    // height of display
+    IY=0         // initial vertical position of square centre
     )
     (
     input wire i_clk,         // base clock

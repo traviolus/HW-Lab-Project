@@ -67,8 +67,8 @@ module top(
     end
     
     reg isMainMenu = 0; //change to 1 if project finish 
-    reg isActionSelect = 1; //change to 0 if project finish 
-    reg isFight = 0; //change to 0 if project finish 
+    reg isActionSelect = 0; //change to 0 if project finish 
+    reg isFight = 1; //change to 0 if project finish 
     reg isDodge = 0; //change to 0 if project finish 
     
     reg de = 1;
@@ -112,7 +112,7 @@ module top(
             begin
                 if (btnU)
                 begin
-                    isFight = 1;
+                    hpEnemy <= hpEnemy - 10;
                 end
             end
         end
@@ -124,6 +124,8 @@ module top(
             isFight = 0;
             isDodge = 0;
             selectedAction = 0;
+            hpHero <= 100;
+            hpEnemy <= 100;
         end
             
         if (btnU | btnD | btnL | btnR)
@@ -141,7 +143,7 @@ module top(
     wire [11:0] actsel_xc, actsel_yc, actsel_r;
     wire actionSelectCr;
     
-    ActionSelect #(.D_WIDTH(SCREEN_WIDTH), .D_HEIGHT(SCREEN_HEIGHT)) actionSelect (
+    ActionSelect actionSelect (
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
         .i_rst(rst),
@@ -185,6 +187,33 @@ module top(
     assign hpHeroSq = ((x > hp_hero_x1) & (y > hp_hero_y1) & (x < hp_hero_x2) & (y < hp_hero_y2)) ? 1 : 0;
     assign hpEnemySq = ((x > hp_enemy_x1) & (y > hp_enemy_y1) & (x < hp_enemy_x2) & (y < hp_enemy_y2)) ? 1 : 0;
     
+    // Fight Display
+    wire [11:0] ff_x1, ff_x2, ff_y1, ff_y2;
+    wire [11:0] mf_x1, mf_x2, mf_y1, mf_y2;
+    wire fixFightGaugeSq, moveFightGaugeSq;
+    
+    square #(.H_WIDTH(10), .H_HEIGHT(20), .IX(400), .IY(350)) fixFightGauge (
+        .i_animate(isFight),
+        .o_x1(ff_x1),
+        .o_x2(ff_x2),
+        .o_y1(ff_y1),
+        .o_y2(ff_y2)
+    );
+    
+    FightGauge #(.H_WIDTH(5), .H_HEIGHT(30), .IX(10), .IY(350)) moveFightGauge (
+        .i_clk(CLK), 
+        .i_ani_stb(pix_stb),
+        .i_rst(rst),
+        .i_animate(isFight),
+        .o_x1(mf_x1),
+        .o_x2(mf_x2),
+        .o_y1(mf_y1),
+        .o_y2(mf_y2)
+    );
+    
+    assign fixFightGaugeSq = ((x > ff_x1) & (y > ff_y1) & (x < ff_x2) & (y < ff_y2)) ? 1 : 0;
+    assign moveFightGaugeSq = ((x > mf_x1) & (y > mf_y1) & (x < mf_x2) & (y < mf_y2)) ? 1 : 0;
+    
     // Display
     always @ (posedge CLK)
     begin
@@ -201,9 +230,9 @@ module top(
             VGA_B <= colour[3:0];
         end
         else if (isMainMenu == 0) begin
-            VGA_R <= (actionSelectCr | hpEnemySq) ? 4'hF:4'h0;
-            VGA_G <= (actionSelectCr | hpHeroSq) ? 4'hF:4'h0;
-            VGA_B <= (0) ? 4'hF:4'h0;
+            VGA_R <= (actionSelectCr | hpEnemySq | moveFightGaugeSq) ? 4'hF:4'h0;
+            VGA_G <= (actionSelectCr | hpHeroSq | fixFightGaugeSq | moveFightGaugeSq) ? 4'hF:4'h0;
+            VGA_B <= (moveFightGaugeSq) ? 4'hF:4'h0;
         end
     end
 endmodule

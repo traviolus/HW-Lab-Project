@@ -1,9 +1,7 @@
 `timescale 1ns / 1ps
 
 module ActionSelect#(
-    H_SIZE=20,      // half square width (for ease of co-ordinate calculations)
-    D_WIDTH=800,    // width of display
-    D_HEIGHT=600    // height of display
+    H_SIZE=20      // half square width (for ease of co-ordinate calculations)
     )
     (
     input wire i_clk,         // base clock
