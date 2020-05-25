@@ -16,12 +16,12 @@ module ActionSelect#(
     output wire [11:0] o_r    // radius value
     );
     
-    reg [11:0] x = 100;   // horizontal position of square centre
-    reg [11:0] y = 500;   // vertical position of square centre
+    reg [11:0] x = 50;   // horizontal position of square centre
+    reg [11:0] y = 550;   // vertical position of square centre
     
     assign o_xc = i_animate ? x + i_selectedAction*150 : 0;   
-    assign o_yc = i_animate ? y : 0;  // top
-    assign o_r = i_animate ? H_SIZE : 0;  // bottom
+    assign o_yc = i_animate ? y : 0;
+    assign o_r = i_animate ? H_SIZE : 0;
 
 
 

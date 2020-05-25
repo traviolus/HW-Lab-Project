@@ -66,15 +66,17 @@ module top(
         $readmemh("basys_palette.mem", palette);  // bitmap palette to load
     end
     
-    reg isMainMenu = 1; //change to 1 if project finish 
-    reg isActionSelect = 0; //change to 0 if project finish 
+    reg isMainMenu = 0; //change to 1 if project finish 
+    reg isActionSelect = 1; //change to 0 if project finish 
     reg isFight = 0; //change to 0 if project finish 
     reg isDodge = 0; //change to 0 if project finish 
     
     reg de = 1;
-    reg attack;
+    reg [6:0] hpHero = 100;
+    reg [6:0] hpEnemy = 100;
     reg [1:0] selectedAction = 2'b00;
     
+    // input control
     always @ (posedge CLK)
     begin       
         if (de)
@@ -110,7 +112,7 @@ module top(
             begin
                 if (btnU)
                 begin
-                    attack = 1;
+                    isFight = 1;
                 end
             end
         end
@@ -135,6 +137,7 @@ module top(
         
     end
     
+    //action select display
     wire [11:0] actsel_xc, actsel_yc, actsel_r;
     wire actionSelectCr;
     
@@ -151,6 +154,38 @@ module top(
 
     assign actionSelectCr = ((((x-actsel_xc)**2) + ((y-actsel_yc)**2) < actsel_r**2) & (x < actsel_xc + actsel_r) & (x > actsel_xc - actsel_r) & (y < actsel_yc + actsel_r) & (y > actsel_yc - actsel_r))  ? 1 : 0;
 
+    //HP gauge display
+    wire [11:0] hp_hero_x1, hp_hero_x2, hp_hero_y1, hp_hero_y2;
+    wire [11:0] hp_enemy_x1, hp_enemy_x2, hp_enemy_y1, hp_enemy_y2;
+    wire hpHeroSq,hpEnemySq;
+    
+    HPGauge #(.H_HEIGHT(10), .IX(50), .IY(450)) hpHeroGauge (
+        .i_clk(CLK), 
+        .i_ani_stb(pix_stb),
+        .i_rst(rst),
+        .i_animate(1),
+        .i_hp(hpHero),
+        .o_x1(hp_hero_x1),
+        .o_x2(hp_hero_x2),
+        .o_y1(hp_hero_y1),
+        .o_y2(hp_hero_y2)
+    );    
+    HPGauge #(.H_HEIGHT(10), .IX(50), .IY(480)) hpEnemyGauge (
+        .i_clk(CLK), 
+        .i_ani_stb(pix_stb),
+        .i_rst(rst),
+        .i_animate(1),
+        .i_hp(hpEnemy),
+        .o_x1(hp_enemy_x1),
+        .o_x2(hp_enemy_x2),
+        .o_y1(hp_enemy_y1),
+        .o_y2(hp_enemy_y2)
+    );  
+
+    assign hpHeroSq = ((x > hp_hero_x1) & (y > hp_hero_y1) & (x < hp_hero_x2) & (y < hp_hero_y2)) ? 1 : 0;
+    assign hpEnemySq = ((x > hp_enemy_x1) & (y > hp_enemy_y1) & (x < hp_enemy_x2) & (y < hp_enemy_y2)) ? 1 : 0;
+    
+    // Display
     always @ (posedge CLK)
     begin
         if (isMainMenu == 1) begin
@@ -166,9 +201,9 @@ module top(
             VGA_B <= colour[3:0];
         end
         else if (isMainMenu == 0) begin
-            VGA_R <= (actionSelectCr) ? 4'hF:4'h0;
-            VGA_G <= (actionSelectCr) ? 4'hF:4'h0;
-            VGA_B <= (actionSelectCr) ? 4'h0:4'h0;
+            VGA_R <= (actionSelectCr | hpEnemySq) ? 4'hF:4'h0;
+            VGA_G <= (actionSelectCr | hpHeroSq) ? 4'hF:4'h0;
+            VGA_B <= (0) ? 4'hF:4'h0;
         end
     end
 endmodule
