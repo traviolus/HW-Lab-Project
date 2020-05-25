@@ -214,6 +214,7 @@ module top(
     
     //Bullet dodge
     
+    //Frame
     wire [11:0] dft_x1, dft_x2, dft_y1, dft_y2;
     wire [11:0] dfb_x1, dfb_x2, dfb_y1, dfb_y2;
     wire [11:0] dfl_x1, dfl_x2, dfl_y1, dfl_y2;
@@ -249,17 +250,53 @@ module top(
         .o_y2(dfr_y2)
     );
     
-    wire [11:0] dft_x1, dft_x2, dft_y1, dft_y2;
-    wire [11:0] dfb_x1, dfb_x2, dfb_y1, dfb_y2;
-    wire [11:0] dfl_x1, dfl_x2, dfl_y1, dfl_y2;
-    wire [11:0] dfr_x1, dfr_x2, dfr_y1, dfr_y2;
-    wire dodgeFrameTopSq, dodgeFrameBottomSq, dodgeFrameLeftSq, dodgeFrameRightSq, dodgeFrameSq;
-    
     assign dodgeFrameTopSq = ((x > dft_x1) & (y > dft_y1) & (x < dft_x2) & (y < dft_y2)) ? 1 : 0;
     assign dodgeFrameBottomSq = ((x > dfb_x1) & (y > dfb_y1) & (x < dfb_x2) & (y < dfb_y2)) ? 1 : 0;
     assign dodgeFrameLeftSq = ((x > dfl_x1) & (y > dfl_y1) & (x < dfl_x2) & (y < dfl_y2)) ? 1 : 0;
     assign dodgeFrameRightSq = ((x > dfr_x1) & (y > dfr_y1) & (x < dfr_x2) & (y < dfr_y2)) ? 1 : 0;
-    assign dodgeFrameSq = (dodgeFrameTopSq | dodgeFrameBottomSq | dodgeFrameLeftSq | dodgeFrameRightSq) ? 1 : 0;    
+    assign dodgeFrameSq = (dodgeFrameTopSq | dodgeFrameBottomSq | dodgeFrameLeftSq | dodgeFrameRightSq) ? 1 : 0;
+    
+    //Bullet
+    wire [11:0] b1_xc, b1_yc, b1_r;
+    wire [11:0] b2_xc, b2_yc, b2_r;
+    wire [11:0] b3_xc, b3_yc, b3_r;
+    wire bullet1Cr, bullet2Cr, bullet3Cr, bulletCr;
+    
+    Bullet #(.IX(300), .IY(300), .X_SPEED(4), .Y_SPEED(2)) bullet1 (
+        .i_clk(CLK), 
+        .i_ani_stb(pix_stb),
+        .i_rst(rst),
+        .i_animate(animate),
+        .i_show(isDodge),
+        .o_xc(b1_xc),
+        .o_yc(b1_yc),
+        .o_r(b1_r)
+    );
+    Bullet #(.IX(400), .IY(350), .IX_DIR(0), .X_SPEED(5), .Y_SPEED(3)) bullet2 (
+        .i_clk(CLK), 
+        .i_ani_stb(pix_stb),
+        .i_rst(rst),
+        .i_animate(animate),
+        .i_show(isDodge),
+        .o_xc(b2_xc),
+        .o_yc(b2_yc),
+        .o_r(b2_r)
+    );
+    Bullet #(.IX(500), .IY(300), .IY_DIR(0), .X_SPEED(4), .Y_SPEED(7)) bullet3 (
+        .i_clk(CLK), 
+        .i_ani_stb(pix_stb),
+        .i_rst(rst),
+        .i_animate(animate),
+        .i_show(isDodge),
+        .o_xc(b3_xc),
+        .o_yc(b3_yc),
+        .o_r(b3_r)
+    );
+    
+    assign bullet1Cr = ((((x-b1_xc)**2) + ((y-b1_yc)**2) < b1_r**2) & (x < b1_xc + b1_r) & (x > b1_xc - b1_r) & (y < b1_yc + b1_r) & (y > b1_yc - b1_r))  ? 1 : 0;
+    assign bullet2Cr = ((((x-b2_xc)**2) + ((y-b2_yc)**2) < b2_r**2) & (x < b2_xc + b2_r) & (x > b2_xc - b2_r) & (y < b2_yc + b2_r) & (y > b2_yc - b2_r))  ? 1 : 0; 
+    assign bullet3Cr = ((((x-b3_xc)**2) + ((y-b3_yc)**2) < b3_r**2) & (x < b3_xc + b3_r) & (x > b3_xc - b3_r) & (y < b3_yc + b3_r) & (y > b3_yc - b3_r))  ? 1 : 0;
+    assign bulletCr = (bullet1Cr | bullet2Cr | bullet3Cr);
     
     // Display
     always @ (posedge CLK)
@@ -277,9 +314,9 @@ module top(
             VGA_B <= colour[3:0];
         end
         else if (isMainMenu == 0) begin
-            VGA_R <= (actionSelectCr | hpEnemySq | moveFightGaugeSq | dodgeFrameSq) ? 4'hF:4'h0;
-            VGA_G <= (actionSelectCr | hpHeroSq | fixFightGaugeSq | moveFightGaugeSq | dodgeFrameSq) ? 4'hF:4'h0;
-            VGA_B <= (moveFightGaugeSq | dodgeFrameSq) ? 4'hF:4'h0;
+            VGA_R <= (actionSelectCr | hpEnemySq | moveFightGaugeSq | dodgeFrameSq | bulletCr) ? 4'hF:4'h0;
+            VGA_G <= (actionSelectCr | hpHeroSq | fixFightGaugeSq | moveFightGaugeSq | dodgeFrameSq | bulletCr) ? 4'hF:4'h0;
+            VGA_B <= (moveFightGaugeSq | dodgeFrameSq | bulletCr) ? 4'hF:4'h0;
         end
     end
 endmodule
