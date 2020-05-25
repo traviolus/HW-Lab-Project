@@ -15,7 +15,6 @@ module top(
     );
 
     wire rst = RST_BTN;  // reset is active high on Basys3 (BTNC)
-    wire button = btnU;
     
     reg [15:0] cnt;
     reg pix_stb;
@@ -67,37 +66,54 @@ module top(
         $readmemh("basys_palette.mem", palette);  // bitmap palette to load
     end
     
-    reg isMainMenu = 0; //change to 1 if project finish 
-    reg isActionSelect = 0;
-    reg isFight = 0;
-    reg isDodge = 0;
+    reg isMainMenu = 1; //change to 1 if project finish 
+    reg isActionSelect = 0; //change to 0 if project finish 
+    reg isFight = 0; //change to 0 if project finish 
+    reg isDodge = 0; //change to 0 if project finish 
     
-    reg selectedAction = 0;
+    reg de = 1;
+    reg [1:0] selectedAction = 2'b00;
     
     always @ (posedge CLK)
-    begin
-        if (isMainMenu & btnU)
+    begin       
+        if (de)
         begin
-            isMainMenu <= 0;
-            isActionSelect <= 1;
-        end
-        else if (isActionSelect)
-        begin
-            if (btnR & selectedAction < 4)
+            if (isMainMenu & btnU)
             begin
-                selectedAction = selectedAction + 1;
+                isMainMenu = 0;
+                isActionSelect = 1;
+                isFight = 0;
+                isDodge = 0;
             end
-            if (btnL & selectedAction > 1)
+            else if (isActionSelect)
             begin
-                selectedAction = selectedAction - 1;
+                if (btnR & selectedAction < 3)
+                begin
+                    selectedAction = selectedAction + 1;
+                end
+                if (btnL & selectedAction > 0)
+                begin
+                    selectedAction = selectedAction - 1;
+                end
             end
         end
-        else if (rst)
+        
+        if (rst)
         begin
-            isMainMenu <= 1;
-            isActionSelect <= 0;
-            isFight <= 0;
-            isDodge <= 0;
+            isMainMenu = 1;
+            isActionSelect = 0;
+            isFight = 0;
+            isDodge = 0;
+            selectedAction = 0;
+        end
+            
+        if (btnU | btnD | btnL | btnR)
+        begin 
+            de = 0;
+        end
+        else
+        begin
+            de = 1;
         end
         
     end
