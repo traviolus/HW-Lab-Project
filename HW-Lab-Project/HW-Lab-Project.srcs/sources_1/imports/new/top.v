@@ -24,6 +24,7 @@ module top(
     wire [10:0] x;  // current pixel x position: 10-bit value: 0-2047
     wire [9:0] y;  // current pixel y position:  9-bit value: 0-1023
     wire active;   // high during active pixel drawing
+    wire animate;  // high when we're ready to animate at end of drawing
 
     vga800x600 display (
         .i_clk(CLK), 
@@ -33,7 +34,8 @@ module top(
         .o_vs(VGA_VS_O), 
         .o_x(x), 
         .o_y(y),
-        .o_active(active)
+        .o_active(active),
+        .o_animate(animate)
     );
 
     // VRAM frame buffers (read-write)
@@ -66,9 +68,9 @@ module top(
         $readmemh("basys_palette.mem", palette);  // bitmap palette to load
     end
     
-    reg isMainMenu = 0; //change to 1 if project finish 
+    reg isMainMenu = 1; //change to 1 if project finish 
     reg isActionSelect = 0; //change to 0 if project finish 
-    reg isFight = 1; //change to 0 if project finish 
+    reg isFight = 0; //change to 0 if project finish 
     reg isDodge = 0; //change to 0 if project finish 
     
     reg de = 1;
@@ -113,6 +115,10 @@ module top(
                 if (btnU)
                 begin
                     hpEnemy <= hpEnemy - 10;
+                    isMainMenu = 0;
+                    isActionSelect = 0;
+                    isFight = 0;
+                    isDodge = 1;
                 end
             end
         end
@@ -147,7 +153,7 @@ module top(
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
         .i_rst(rst),
-        .i_animate(isActionSelect),
+        .i_show(isActionSelect),
         .i_selectedAction(selectedAction),
         .o_xc(actsel_xc),
         .o_yc(actsel_yc),
@@ -165,7 +171,6 @@ module top(
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
         .i_rst(rst),
-        .i_animate(1),
         .i_hp(hpHero),
         .o_x1(hp_hero_x1),
         .o_x2(hp_hero_x2),
@@ -176,7 +181,6 @@ module top(
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
         .i_rst(rst),
-        .i_animate(1),
         .i_hp(hpEnemy),
         .o_x1(hp_enemy_x1),
         .o_x2(hp_enemy_x2),
@@ -193,18 +197,19 @@ module top(
     wire fixFightGaugeSq, moveFightGaugeSq;
     
     square #(.H_WIDTH(10), .H_HEIGHT(20), .IX(400), .IY(350)) fixFightGauge (
-        .i_animate(isFight),
+        .i_show(isFight),
         .o_x1(ff_x1),
         .o_x2(ff_x2),
         .o_y1(ff_y1),
         .o_y2(ff_y2)
     );
     
-    FightGauge #(.H_WIDTH(5), .H_HEIGHT(30), .IX(10), .IY(350)) moveFightGauge (
+    FightGauge #(.H_WIDTH(3), .H_HEIGHT(30), .IX(400), .IY(350)) moveFightGauge (
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
         .i_rst(rst),
-        .i_animate(isFight),
+        .i_animate(animate),
+        .i_show(isFight),
         .o_x1(mf_x1),
         .o_x2(mf_x2),
         .o_y1(mf_y1),
@@ -213,6 +218,8 @@ module top(
     
     assign fixFightGaugeSq = ((x > ff_x1) & (y > ff_y1) & (x < ff_x2) & (y < ff_y2)) ? 1 : 0;
     assign moveFightGaugeSq = ((x > mf_x1) & (y > mf_y1) & (x < mf_x2) & (y < mf_y2)) ? 1 : 0;
+    
+    //Bullet dodge
     
     // Display
     always @ (posedge CLK)
