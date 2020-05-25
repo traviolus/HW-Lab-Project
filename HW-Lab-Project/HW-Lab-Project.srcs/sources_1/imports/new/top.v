@@ -135,8 +135,8 @@ module top(
         
     end
     
-    wire [11:0] actsel_x1, actsel_x2, actsel_y1, actsel_y2;
-    wire actionSelectSq;
+    wire [11:0] actsel_xc, actsel_yc, actsel_r;
+    wire actionSelectCr;
     
     ActionSelect #(.D_WIDTH(SCREEN_WIDTH), .D_HEIGHT(SCREEN_HEIGHT)) actionSelect (
         .i_clk(CLK), 
@@ -144,13 +144,12 @@ module top(
         .i_rst(rst),
         .i_animate(isActionSelect),
         .i_selectedAction(selectedAction),
-        .o_x1(actsel_x1),
-        .o_x2(actsel_x2),
-        .o_y1(actsel_y1),
-        .o_y2(actsel_y2)
+        .o_xc(actsel_xc),
+        .o_yc(actsel_yc),
+        .o_r(actsel_r)
     );
 
-    assign actionSelectSq = ((x > actsel_x1) & (y > actsel_y1) & (x < actsel_x2) & (y < actsel_y2)) ? 1 : 0;
+    assign actionSelectCr = ((((x-actsel_xc)**2) + ((y-actsel_yc)**2) < actsel_r**2) & (x < actsel_xc + actsel_r) & (x > actsel_xc - actsel_r) & (y < actsel_yc + actsel_r) & (y > actsel_yc - actsel_r))  ? 1 : 0;
 
     always @ (posedge CLK)
     begin
@@ -167,9 +166,9 @@ module top(
             VGA_B <= colour[3:0];
         end
         else if (isMainMenu == 0) begin
-            VGA_R <= (actionSelectSq) ? 4'hF:4'h0;
-            VGA_G <= (actionSelectSq) ? 4'hF:4'h0;
-            VGA_B <= (actionSelectSq) ? 4'hF:4'h0;
+            VGA_R <= (actionSelectCr) ? 4'hF:4'h0;
+            VGA_G <= (actionSelectCr) ? 4'hF:4'h0;
+            VGA_B <= (actionSelectCr) ? 4'h0:4'h0;
         end
     end
 endmodule
