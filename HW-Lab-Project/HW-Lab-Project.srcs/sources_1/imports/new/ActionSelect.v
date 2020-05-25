@@ -19,10 +19,12 @@ module ActionSelect#(
     
     reg [11:0] x = 100;   // horizontal position of square centre
     reg [11:0] y = 500;   // vertical position of square centre
-
-    assign o_x1 = x - H_SIZE + i_selectedAction*150 ;  // left: centre minus half horizontal size
-    assign o_x2 = x + H_SIZE + i_selectedAction*150;  // right
-    assign o_y1 = y - H_SIZE;  // top
-    assign o_y2 = y + H_SIZE;  // bottom
     
+    assign o_x1 = i_animate ? x - H_SIZE + i_selectedAction*150 : 0;  // left: centre minus half horizontal size
+    assign o_x2 = i_animate ? x + H_SIZE + i_selectedAction*150 : 0;  // right
+    assign o_y1 = i_animate ? y - H_SIZE : 0;  // top
+    assign o_y2 = i_animate ? y + H_SIZE : 0;  // bottom
+
+
+
 endmodule

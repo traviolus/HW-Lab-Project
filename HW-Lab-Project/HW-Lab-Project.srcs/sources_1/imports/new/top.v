@@ -72,6 +72,7 @@ module top(
     reg isDodge = 0; //change to 0 if project finish 
     
     reg de = 1;
+    reg attack;
     reg [1:0] selectedAction = 2'b00;
     
     always @ (posedge CLK)
@@ -84,6 +85,7 @@ module top(
                 isActionSelect = 1;
                 isFight = 0;
                 isDodge = 0;
+                selectedAction = 0;
             end
             else if (isActionSelect)
             begin
@@ -91,9 +93,24 @@ module top(
                 begin
                     selectedAction = selectedAction + 1;
                 end
-                if (btnL & selectedAction > 0)
+                else if (btnL & selectedAction > 0)
                 begin
                     selectedAction = selectedAction - 1;
+                end
+                else if (btnU & selectedAction == 0)
+                begin
+                    isMainMenu = 0;
+                    isActionSelect = 0;
+                    isFight = 1;
+                    isDodge = 0;
+                    selectedAction = 0;
+                end
+            end
+            else if (isFight)
+            begin
+                if (btnU)
+                begin
+                    attack = 1;
                 end
             end
         end
