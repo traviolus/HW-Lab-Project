@@ -292,6 +292,17 @@ module top(
             end
             else if (isFight)
             begin
+                if (hpEnemy <= 0 | hpEnemy > 100)
+                begin
+                    isMainMenu = 1;
+                    isActionSelect = 0;
+                    isFight = 0;
+                    isDodge = 0;
+                    selectedAction = 0;
+                    hpHero <= 100;
+                    hpEnemy <= 100;
+                    damage <= 0;
+                end
                 if (btnU)
                 begin
                     if ((mf_x1 > ff_x1) & (mf_x2 < ff_x2)) begin
@@ -312,6 +323,17 @@ module top(
             end
             else if (isDodge)
             begin
+                if (hpHero <= 0 | hpHero > 100)
+                begin
+                    isMainMenu = 1;
+                    isActionSelect = 0;
+                    isFight = 0;
+                    isDodge = 0;
+                    selectedAction = 0;
+                    hpHero <= 100;
+                    hpEnemy <= 100;
+                    damage <= 0;
+                end
                 timer <= timer + 1;
                 if (timer > 500000000)
                 begin
