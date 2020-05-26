@@ -223,7 +223,7 @@ module top(
     
     //Bullet dodge
     
-    //Frame
+    ///Frame
     wire [11:0] dft_x1, dft_x2, dft_y1, dft_y2;
     wire [11:0] dfb_x1, dfb_x2, dfb_y1, dfb_y2;
     wire [11:0] dfl_x1, dfl_x2, dfl_y1, dfl_y2;
@@ -265,7 +265,7 @@ module top(
     assign dodgeFrameRightSq = ((x > dfr_x1) & (y > dfr_y1) & (x < dfr_x2) & (y < dfr_y2)) ? 1 : 0;
     assign dodgeFrameSq = (dodgeFrameTopSq | dodgeFrameBottomSq | dodgeFrameLeftSq | dodgeFrameRightSq) ? 1 : 0;
     
-    //Bullet
+    ///Bullet
     wire [11:0] b1_xc, b1_yc, b1_r;
     wire [11:0] b2_xc, b2_yc, b2_r;
     wire [11:0] b3_xc, b3_yc, b3_r;
@@ -307,6 +307,27 @@ module top(
     assign bullet3Cr = ((((x-b3_xc)**2) + ((y-b3_yc)**2) < b3_r**2) & (x < b3_xc + b3_r) & (x > b3_xc - b3_r) & (y < b3_yc + b3_r) & (y > b3_yc - b3_r))  ? 1 : 0;
     assign bulletCr = (bullet1Cr | bullet2Cr | bullet3Cr);
     
+    ///Soul
+    wire [11:0] s_xc, s_yc, s_r;
+    wire soulCr;
+    
+    Soul #(.IX(400), .IY(250), .SPEED(4)) soul (
+        .i_clk(CLK), 
+        .i_ani_stb(pix_stb),
+        .i_rst(rst),
+        .i_animate(animate),
+        .i_show(isDodge),
+        .i_up(btnU),
+        .i_down(btnD),
+        .i_left(btnL),
+        .i_right(btnR),
+        .o_xc(s_xc),
+        .o_yc(s_yc),
+        .o_r(s_r)
+    );
+    
+    assign soulCr = ((((x-s_xc)**2) + ((y-s_yc)**2) < s_r**2) & (x < s_xc + s_r) & (x > s_xc - s_r) & (y < s_yc + s_r) & (y > s_yc - s_r))  ? 1 : 0;
+    
     // Display
     always @ (posedge CLK)
     begin
@@ -323,7 +344,7 @@ module top(
             VGA_B <= colour[3:0];
         end
         else if (isMainMenu == 0) begin
-            VGA_R <= (actionSelectCr | hpEnemySq | moveFightGaugeSq | dodgeFrameSq | bulletCr) ? 4'hF:4'h0;
+            VGA_R <= (actionSelectCr | hpEnemySq | moveFightGaugeSq | dodgeFrameSq | bulletCr | soulCr) ? 4'hF:4'h0;
             VGA_G <= (actionSelectCr | hpHeroSq | fixFightGaugeSq | moveFightGaugeSq | dodgeFrameSq | bulletCr) ? 4'hF:4'h0;
             VGA_B <= (moveFightGaugeSq | dodgeFrameSq | bulletCr) ? 4'hF:4'h0;
         end
