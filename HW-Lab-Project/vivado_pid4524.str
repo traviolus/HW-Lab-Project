@@ -1,0 +1,130 @@
+/*
+
+Xilinx Vivado v2019.2 (64-bit) [Major: 2019, Minor: 2]
+SW Build: 2708876 on Wed Nov  6 21:40:23 MST 2019
+IP Build: 2700528 on Thu Nov  7 00:09:20 MST 2019
+
+Process ID (PID): 4524
+License: Customer
+
+Current time: 	Wed May 27 02:26:12 ICT 2020
+Time zone: 	Indochina Time (Asia/Bangkok)
+
+OS: Windows 10
+OS Version: 10.0
+OS Architecture: amd64
+Available processors (cores): 8
+
+Screen size: 1920x1080
+Screen resolution (DPI): 100
+Available screens: 1
+Available disk space: 283 GB
+Default font: family=Dialog,name=Dialog,style=plain,size=12
+
+Java version: 	9.0.4 64-bit
+Java home: 	E:/Xilinx/Vivado/2019.2/tps/win64/jre9.0.4
+Java executable location: 	E:/Xilinx/Vivado/2019.2/tps/win64/jre9.0.4/bin/java.exe
+Java initial memory (-Xms): 	128 MB
+Java maximum memory (-Xmx):	 3 GB
+
+
+User name: 	d1945
+User home directory: C:/Users/d1945
+User working directory: C:/Users/d1945/Documents/GitHub/HW-Lab-Project/HW-Lab-Project
+User country: 	US
+User language: 	en
+User locale: 	en_US
+
+RDI_BASEROOT: E:/Xilinx/Vivado
+HDI_APPROOT: E:/Xilinx/Vivado/2019.2
+RDI_DATADIR: E:/Xilinx/Vivado/2019.2/data
+RDI_BINDIR: E:/Xilinx/Vivado/2019.2/bin
+
+Vivado preferences file location: C:/Users/d1945/AppData/Roaming/Xilinx/Vivado/2019.2/vivado.xml
+Vivado preferences directory: C:/Users/d1945/AppData/Roaming/Xilinx/Vivado/2019.2/
+Vivado layouts directory: C:/Users/d1945/AppData/Roaming/Xilinx/Vivado/2019.2/layouts
+PlanAhead jar file location: 	E:/Xilinx/Vivado/2019.2/lib/classes/planAhead.jar
+Vivado log file location: 	C:/Users/d1945/Documents/GitHub/HW-Lab-Project/HW-Lab-Project/vivado.log
+Vivado journal file location: 	C:/Users/d1945/Documents/GitHub/HW-Lab-Project/HW-Lab-Project/vivado.jou
+Engine tmp dir: 	C:/Users/d1945/Documents/GitHub/HW-Lab-Project/HW-Lab-Project/.Xil/Vivado-4524-DAVID-MSI
+
+Xilinx Environment Variables
+----------------------------
+XILINX: E:/Xilinx/Vivado/2019.2/ids_lite/ISE
+XILINX_DSP: E:/Xilinx/Vivado/2019.2/ids_lite/ISE
+XILINX_PLANAHEAD: E:/Xilinx/Vivado/2019.2
+XILINX_VIVADO: E:/Xilinx/Vivado/2019.2
+XILINX_VIVADO_HLS: E:/Xilinx/Vivado/2019.2
+
+
+GUI allocated memory:	186 MB
+GUI max memory:		3,072 MB
+Engine allocated memory: 650 MB
+
+Copyright 1986-2019 Xilinx, Inc. All Rights Reserved.
+
+*/
+
+// TclEventType: START_GUI
+// Tcl Message: start_gui 
+// TclEventType: PROJECT_OPEN_DIALOG
+// bB (cr):  Open Project : addNotify
+// Opening Vivado Project: C:\Users\d1945\Documents\GitHub\HW-Lab-Project\HW-Lab-Project\HW-Lab-Project.xpr. Version: Vivado v2019.2 
+// TclEventType: DEBUG_PROBE_SET_CHANGE
+// Tcl Message: open_project C:/Users/d1945/Documents/GitHub/HW-Lab-Project/HW-Lab-Project/HW-Lab-Project.xpr 
+// TclEventType: MSGMGR_MOVEMSG
+// TclEventType: FILE_SET_NEW
+// TclEventType: RUN_CURRENT
+// TclEventType: PROJECT_DASHBOARD_NEW
+// TclEventType: PROJECT_DASHBOARD_GADGET_NEW
+// TclEventType: PROJECT_DASHBOARD_GADGET_CHANGE
+// TclEventType: PROJECT_DASHBOARD_GADGET_NEW
+// TclEventType: PROJECT_DASHBOARD_GADGET_CHANGE
+// TclEventType: PROJECT_DASHBOARD_GADGET_NEW
+// TclEventType: PROJECT_DASHBOARD_GADGET_CHANGE
+// TclEventType: PROJECT_DASHBOARD_GADGET_NEW
+// TclEventType: PROJECT_DASHBOARD_GADGET_CHANGE
+// TclEventType: PROJECT_DASHBOARD_GADGET_NEW
+// TclEventType: PROJECT_DASHBOARD_GADGET_CHANGE
+// TclEventType: PROJECT_DASHBOARD_GADGET_NEW
+// TclEventType: PROJECT_DASHBOARD_GADGET_CHANGE
+// TclEventType: PROJECT_NEW
+// Tcl Message: open_project C:/Users/d1945/Documents/GitHub/HW-Lab-Project/HW-Lab-Project/HW-Lab-Project.xpr 
+// Tcl Message: Scanning sources... Finished scanning sources 
+// Tcl Message: INFO: [IP_Flow 19-234] Refreshing IP repositories INFO: [IP_Flow 19-1704] No user IP repositories specified 
+// TclEventType: PROJECT_NEW
+// [GUI Memory]: 96 MB (+97736kb) [00:00:12]
+// [Engine Memory]: 669 MB (+550226kb) [00:00:12]
+// [GUI Memory]: 113 MB (+13315kb) [00:00:13]
+// WARNING: HEventQueue.dispatchEvent() is taking  3213 ms.
+// Tcl Message: INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'E:/Xilinx/Vivado/2019.2/data/ip'. 
+// HMemoryUtils.trashcanNow. Engine heap size: 681 MB. GUI used memory: 54 MB. Current time: 5/27/20, 2:26:16 AM ICT
+// Tcl Message: open_project: Time (s): cpu = 00:00:16 ; elapsed = 00:00:05 . Memory (MB): peak = 707.383 ; gain = 52.398 
+// Project name: HW-Lab-Project; location: C:/Users/d1945/Documents/GitHub/HW-Lab-Project/HW-Lab-Project; part: xc7a35tcpg236-1
+dismissDialog("Open Project"); // bB (cr)
+// [Engine Memory]: 713 MB (+10321kb) [00:00:18]
+// Tcl Message: update_compile_order -fileset sources_1 
+// PAPropertyPanels.initPanels (top.v) elapsed time: 0.2s
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, top (top.v)]", 1, true); // B (F, cr) - Node
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, top (top.v), display : vga800x600 (vga800x600.v)]", 2, false); // B (F, cr)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, top (top.v), R1 : xil_defaultlib.receiver]", 17, false); // B (F, cr)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, top (top.v)]", 1, true); // B (F, cr) - Node
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, top (top.v)]", 1, true, false, false, false, false, true); // B (F, cr) - Double Click - Node
+// Elapsed time: 13 seconds
+selectCodeEditor("top.v", 1039, 210); // ch (w, cr)
+typeControlKey((HResource) null, "top.v", 'v'); // ch (w, cr)
+typeControlKey(null, null, 'z');
+selectCodeEditor("top.v", 29, 167); // ch (w, cr)
+// Elapsed time: 10 seconds
+selectCodeEditor("top.v", 279, 419); // ch (w, cr)
+typeControlKey((HResource) null, "top.v", 'v'); // ch (w, cr)
+selectCodeEditor("top.v", 22, 180); // ch (w, cr)
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, top (top.v)]", 1, true); // B (F, cr) - Node
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, top (top.v), display : vga800x600 (vga800x600.v)]", 2, false, false, false, false, false, true); // B (F, cr) - Double Click
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, top (top.v), counter : xil_defaultlib.counter]", 17, false, false, false, false, true, false); // B (F, cr) - Popup Trigger
+selectMenu(PAResourceCommand.PACommandNames_AUTO_UPDATE_HIER, "Hierarchy Update"); // af (ao, cr)
+selectMenu(PAResourceQtoS.SrcMenu_IP_HIERARCHY, "IP Hierarchy"); // af (ao, cr)
+selectMenuItem(PAResourceCommand.PACommandNames_ADD_SOURCES, "Add Sources..."); // ai (ao, cr)
+selectMenu(PAResourceQtoS.SrcMenu_IP_HIERARCHY, "IP Hierarchy"); // af (ao, cr)
