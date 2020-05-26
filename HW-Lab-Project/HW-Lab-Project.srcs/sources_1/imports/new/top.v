@@ -7,12 +7,21 @@ module top(
     input wire btnD,            // down button
     input wire btnL,            // left button
     input wire btnR,            // right button
+    input wire RxD,             // UART
+    output wire TxD,            // UART
     output wire VGA_HS_O,       // horizontal sync output
     output wire VGA_VS_O,       // vertical sync output
     output reg [3:0] VGA_R,     // 4-bit VGA red output
     output reg [3:0] VGA_G,     // 4-bit VGA green output
     output reg [3:0] VGA_B      // 4-bit VGA blue output
     );
+    
+    reg btnW, btnA, btnS, btnDD, btnSpace;
+    
+    assign btnU = btnW;
+    assign btnD = btnS;
+    assign btnL = btnA;
+    assign btnR = btnDD;
 
     wire rst = RST_BTN;  // reset is active high on Basys3 (BTNC)
     
@@ -402,4 +411,52 @@ module top(
             VGA_B <= (moveFightGaugeSq | dodgeFrameSq | bulletCr) ? 4'hF:4'h0;
         end
     end
+    
+    receiver R1 (CLK, RST_BTN,RxD,RxData,TxD);
+    
+    always @(*)
+begin
+    case (RxData)
+            8'b01110111:begin //w
+                btnW = 1;
+                btnS = 0;
+                btnA = 0;
+                btnDD = 0;
+            end
+            8'b01110011:begin //s
+                btnW = 0;
+                btnS = 1;
+                btnA = 0;
+                btnDD = 0;
+            end
+            8'b01100001:begin //a
+                btnW = 0;
+                btnS = 0;
+                btnA = 1;
+                btnDD = 0;
+            end
+            8'b01100100:begin //d
+                btnW = 0;
+                btnS = 0;
+                btnA = 0;
+                btnDD = 1;
+            end
+//            8'b01100011:begin //c
+//                ooData=RxData-32;
+//            end
+//            8'b01101101:begin //m
+//                ooData=RxData-32;
+//            end
+//            8'b01111001:begin //y
+//                ooData=RxData-32;
+//            end
+            8'b00100000:begin //space
+                btnSpace = 1;
+            end
+//            default:begin
+//                ooData=0;
+//            end
+     endcase
+end
+    
 endmodule
