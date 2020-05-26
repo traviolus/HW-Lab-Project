@@ -273,6 +273,16 @@ module top(
     
     assign soulCr = ((((x-s_xc)**2) + ((y-s_yc)**2) < s_r**2) & (x < s_xc + s_r) & (x > s_xc - s_r) & (y < s_yc + s_r) & (y > s_yc - s_r))  ? 1 : 0;
     
+    //Counter
+    wire ready;
+    
+    counter (
+        .i_clk(CLK),
+        .i_reset(isActionSelect),
+        .i_signal(isDodge),
+        .o_ready(ready)
+    );
+    
     always @ (posedge CLK)
     begin       
         if (de)
@@ -327,7 +337,6 @@ module top(
                     isShowb1 = 1;
                     isShowb2 = 1;
                     isShowb3 = 1;
-                    timer = 0;
                 end
             end
             else if (isDodge)
@@ -343,8 +352,7 @@ module top(
                     hpEnemy <= 100;
                     damage <= 0;
                 end
-                timer <= timer + 1;
-                if (timer > 500000000)
+                if (ready)
                 begin
                     isDodge = 0;
                     isActionSelect = 1;
