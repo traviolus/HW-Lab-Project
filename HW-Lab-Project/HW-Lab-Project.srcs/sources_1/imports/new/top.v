@@ -110,7 +110,13 @@ module top(
             begin
                 if (btnU)
                 begin
-                    damage = ((mf_x1 > ff_x1) & (mf_x2 < ff_x2)) ? 10:0;
+                    if ((mf_x1 > ff_x1) & (mf_x2 < ff_x2)) begin
+                        if ((mf_x1+mf_x2)/2 >= (ff_x1+ff_x2)/2) begin
+                            damage = (10-(((mf_x1+mf_x2)/2)-((ff_x1+ff_x2)/2)))*5;
+                        end else begin
+                            damage = (10-(((ff_x1+ff_x2)/2)-((mf_x1+mf_x2)/2)))*5;
+                        end
+                    end
                     hpEnemy = hpEnemy - damage; 
                     isFight = 0;
                     isDodge = 1;
@@ -192,7 +198,7 @@ module top(
     wire [11:0] mf_x1, mf_x2, mf_y1, mf_y2;
     wire fixFightGaugeSq, moveFightGaugeSq;
     
-    square #(.H_WIDTH(10), .H_HEIGHT(20), .IX(400), .IY(350)) fixFightGauge (
+    square #(.H_WIDTH(20), .H_HEIGHT(20), .IX(400), .IY(350)) fixFightGauge (
         .i_show(isFight),
         .o_x1(ff_x1),
         .o_x2(ff_x2),
