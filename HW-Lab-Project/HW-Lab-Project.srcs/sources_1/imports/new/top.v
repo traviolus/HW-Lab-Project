@@ -68,6 +68,7 @@ module top(
         $readmemh("basys_palette.mem", palette);  // bitmap palette to load
     end
     
+    // varible declare
     reg isMainMenu = 0; //change to 1 if project finish 
     reg isActionSelect = 0; //change to 0 if project finish 
     reg isFight = 0; //change to 0 if project finish 
@@ -78,74 +79,7 @@ module top(
     reg [6:0] hpEnemy = 100;
     reg [4:0] damage = 0;
     reg [1:0] selectedAction = 2'b00;
-    
-    // input control
-    always @ (posedge CLK)
-    begin       
-        if (de)
-        begin
-            if (isMainMenu & btnU)
-            begin
-                isMainMenu = 0;
-                isActionSelect = 1;
-                selectedAction = 0;
-            end
-            else if (isActionSelect)
-            begin
-                if (btnR & selectedAction < 3)
-                begin
-                    selectedAction = selectedAction + 1;
-                end
-                else if (btnL & selectedAction > 0)
-                begin
-                    selectedAction = selectedAction - 1;
-                end
-                else if (btnU & selectedAction == 0)
-                begin
-                    isActionSelect = 0;
-                    isFight = 1;
-                end
-            end
-            else if (isFight)
-            begin
-                if (btnU)
-                begin
-                    if ((mf_x1 > ff_x1) & (mf_x2 < ff_x2)) begin
-                        if ((mf_x1+mf_x2)/2 >= (ff_x1+ff_x2)/2) begin
-                            damage = (10-(((mf_x1+mf_x2)/2)-((ff_x1+ff_x2)/2)))*5;
-                        end else begin
-                            damage = (10-(((ff_x1+ff_x2)/2)-((mf_x1+mf_x2)/2)))*5;
-                        end
-                    end
-                    hpEnemy = hpEnemy - damage; 
-                    isFight = 0;
-                    isDodge = 1;
-                end
-            end
-        end
-        
-        if (rst)
-        begin
-            isMainMenu = 1;
-            isActionSelect = 0;
-            isFight = 0;
-            isDodge = 0;
-            selectedAction = 0;
-            hpHero <= 100;
-            hpEnemy <= 100;
-            damage <= 0;
-        end
-            
-        if (btnU | btnD | btnL | btnR)
-        begin 
-            de = 0;
-        end
-        else
-        begin
-            de = 1;
-        end
-        
-    end
+    reg [29:0] timer;
     
     //action select display
     wire [11:0] actsel_xc, actsel_yc, actsel_r;
@@ -221,8 +155,7 @@ module top(
     assign fixFightGaugeSq = ((x > ff_x1) & (y > ff_y1) & (x < ff_x2) & (y < ff_y2)) ? 1 : 0;
     assign moveFightGaugeSq = ((x > mf_x1) & (y > mf_y1) & (x < mf_x2) & (y < mf_y2)) ? 1 : 0;
     
-    //Bullet dodge
-    
+    //Bullet dodge display
     ///Frame
     wire [11:0] dft_x1, dft_x2, dft_y1, dft_y2;
     wire [11:0] dfb_x1, dfb_x2, dfb_y1, dfb_y2;
@@ -270,13 +203,16 @@ module top(
     wire [11:0] b2_xc, b2_yc, b2_r;
     wire [11:0] b3_xc, b3_yc, b3_r;
     wire bullet1Cr, bullet2Cr, bullet3Cr, bulletCr;
+    reg isShowb1 = 1;
+    reg isShowb2 = 1;
+    reg isShowb3 = 1;
     
     Bullet #(.IX(300), .IY(300), .X_SPEED(4), .Y_SPEED(2)) bullet1 (
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
         .i_rst(rst),
         .i_animate(animate),
-        .i_show(isDodge),
+        .i_show(isDodge&isShowb1),
         .o_xc(b1_xc),
         .o_yc(b1_yc),
         .o_r(b1_r)
@@ -286,7 +222,7 @@ module top(
         .i_ani_stb(pix_stb),
         .i_rst(rst),
         .i_animate(animate),
-        .i_show(isDodge),
+        .i_show(isDodge&isShowb2),
         .o_xc(b2_xc),
         .o_yc(b2_yc),
         .o_r(b2_r)
@@ -296,7 +232,7 @@ module top(
         .i_ani_stb(pix_stb),
         .i_rst(rst),
         .i_animate(animate),
-        .i_show(isDodge),
+        .i_show(isDodge&isShowb3),
         .o_xc(b3_xc),
         .o_yc(b3_yc),
         .o_r(b3_r)
@@ -327,6 +263,101 @@ module top(
     );
     
     assign soulCr = ((((x-s_xc)**2) + ((y-s_yc)**2) < s_r**2) & (x < s_xc + s_r) & (x > s_xc - s_r) & (y < s_yc + s_r) & (y > s_yc - s_r))  ? 1 : 0;
+    
+    always @ (posedge CLK)
+    begin       
+        if (de)
+        begin
+            if (isMainMenu & btnU)
+            begin
+                isMainMenu = 0;
+                isActionSelect = 1;
+                selectedAction = 0;
+            end
+            else if (isActionSelect)
+            begin
+                if (btnR & selectedAction < 3)
+                begin
+                    selectedAction = selectedAction + 1;
+                end
+                else if (btnL & selectedAction > 0)
+                begin
+                    selectedAction = selectedAction - 1;
+                end
+                else if (btnU & selectedAction == 0)
+                begin
+                    isActionSelect = 0;
+                    isFight = 1;
+                end
+            end
+            else if (isFight)
+            begin
+                if (btnU)
+                begin
+                    if ((mf_x1 > ff_x1) & (mf_x2 < ff_x2)) begin
+                        if ((mf_x1+mf_x2)/2 >= (ff_x1+ff_x2)/2) begin
+                            damage = (10-(((mf_x1+mf_x2)/2)-((ff_x1+ff_x2)/2)))*5;
+                        end else begin
+                            damage = (10-(((ff_x1+ff_x2)/2)-((mf_x1+mf_x2)/2)))*5;
+                        end
+                    end
+                    hpEnemy = hpEnemy - damage;
+                    isFight = 0;
+                    isDodge = 1;
+                    isShowb1 = 1;
+                    isShowb2 = 1;
+                    isShowb3 = 1;
+                    timer = 0;
+                end
+            end
+            else if (isDodge)
+            begin
+                timer <= timer + 1;
+                if (timer > 500000000)
+                begin
+                    isDodge = 0;
+                    isActionSelect = 1;
+                end
+                if (soulCr & bullet1Cr)
+                begin
+                    isShowb1 = 0;
+                    hpHero = hpHero - 10;
+                end
+                if (soulCr & bullet2Cr)
+                begin
+                    isShowb2 = 0;
+                    hpHero = hpHero - 10;
+                end
+                if (soulCr & bullet3Cr)
+                begin
+                    isShowb3 = 0;
+                    hpHero = hpHero - 10;
+                end
+            end
+        end
+        
+        if (rst)
+        begin
+            isMainMenu = 1;
+            isActionSelect = 0;
+            isFight = 0;
+            isDodge = 0;
+            selectedAction = 0;
+            hpHero <= 100;
+            hpEnemy <= 100;
+            damage <= 0;
+        end
+            
+        if (btnU | btnD | btnL | btnR)
+        begin 
+            de = 0;
+        end
+        else
+        begin
+            de = 1;
+        end
+        
+    end
     
     // Display
     always @ (posedge CLK)
