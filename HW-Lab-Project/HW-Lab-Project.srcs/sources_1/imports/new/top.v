@@ -76,6 +76,7 @@ module top(
     reg de = 1;
     reg [6:0] hpHero = 100;
     reg [6:0] hpEnemy = 100;
+    reg [4:0] damage = 0;
     reg [1:0] selectedAction = 2'b00;
     
     // input control
@@ -109,7 +110,8 @@ module top(
             begin
                 if (btnU)
                 begin
-                    hpEnemy <= hpEnemy - 10; 
+                    damage = ((mf_x1 > ff_x1) & (mf_x2 < ff_x2)) ? 10:0;
+                    hpEnemy = hpEnemy - damage; 
                     isFight = 0;
                     isDodge = 1;
                 end
@@ -125,6 +127,7 @@ module top(
             selectedAction = 0;
             hpHero <= 100;
             hpEnemy <= 100;
+            damage <= 0;
         end
             
         if (btnU | btnD | btnL | btnR)
