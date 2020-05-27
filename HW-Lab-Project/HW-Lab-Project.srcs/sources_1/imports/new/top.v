@@ -3,38 +3,25 @@
 module top(
     input wire CLK,             // board clock: 100 MHz on Arty/Basys3/Nexys
     input wire RST_BTN,         // reset button
-//    input wire btnU,            // up button
-//    input wire btnD,            // down button
-//    input wire btnL,            // left button
-//    input wire btnR,            // right button
+    input wire btnU,            // up button
+    input wire btnD,            // down button
+    input wire btnL,            // left button
+    input wire btnR,            // right button
     input wire RxD,             // UART
     output wire TxD,            // UART
-    output [7:0]RxData,
     output wire VGA_HS_O,       // horizontal sync output
     output wire VGA_VS_O,       // vertical sync output
     output reg [3:0] VGA_R,     // 4-bit VGA red output
     output reg [3:0] VGA_G,     // 4-bit VGA green output
-    output reg [3:0] VGA_B,      // 4-bit VGA blue output
-    output reg [6:0] seg,
-    output dp,
-    output [3:0] an
+    output reg [3:0] VGA_B      // 4-bit VGA blue output
     );
     
-    assign an = 4'b0001;
+    reg btnW, btnA, btnS, btnDD, btnSpace;
     
-    wire btnW, btnA, btnS, btnDD, btnSpace;
-    reg btnrW, btnrA, btnrS, btnrDD, btnrSpace;
-    
-    assign btnW = btnrW;
-    assign btnA = btnrA;
-    assign btnS = btnrS;
-    assign btnDD = btnrDD;
-    assign btnSpace = btnrSpace;
-    
-//    assign btnU = btnW;
-//    assign btnD = btnS;
-//    assign btnL = btnA;
-//    assign btnR = btnDD;
+    // assign btnU = btnW;
+    // assign btnD = btnS;
+    // assign btnL = btnA;
+    // assign btnR = btnDD;
 
     wire rst = RST_BTN;  // reset is active high on Basys3 (BTNC)
     
@@ -286,11 +273,21 @@ module top(
     
     assign soulCr = ((((x-s_xc)**2) + ((y-s_yc)**2) < s_r**2) & (x < s_xc + s_r) & (x > s_xc - s_r) & (y < s_yc + s_r) & (y > s_yc - s_r))  ? 1 : 0;
     
+    //Counter
+    wire ready;
+    
+    counter (
+        .i_clk(CLK),
+        .i_reset(isActionSelect),
+        .i_signal(isDodge),
+        .o_ready(ready)
+    );
+    
     always @ (posedge CLK)
     begin       
         if (de)
         begin
-            if (isMainMenu & btnSpace)
+            if (isMainMenu & btnW)
             begin
                 isMainMenu = 0;
                 isActionSelect = 1;
@@ -306,7 +303,7 @@ module top(
                 begin
                     selectedAction = selectedAction - 1;
                 end
-                else if (btnSpace & selectedAction == 0)
+                else if (btnW & selectedAction == 0)
                 begin
                     isActionSelect = 0;
                     isFight = 1;
@@ -325,7 +322,7 @@ module top(
                     hpEnemy <= 100;
                     damage <= 0;
                 end
-                if (btnSpace)
+                if (btnW)
                 begin
                     if ((mf_x1 > ff_x1) & (mf_x2 < ff_x2)) begin
                         if ((mf_x1+mf_x2)/2 >= (ff_x1+ff_x2)/2) begin
@@ -340,7 +337,6 @@ module top(
                     isShowb1 = 1;
                     isShowb2 = 1;
                     isShowb3 = 1;
-                    timer = 0;
                 end
             end
             else if (isDodge)
@@ -356,8 +352,7 @@ module top(
                     hpEnemy <= 100;
                     damage <= 0;
                 end
-                timer <= timer + 1;
-                if (timer > 500000000)
+                if (ready)
                 begin
                     isDodge = 0;
                     isActionSelect = 1;
@@ -435,33 +430,24 @@ begin
                 btnS = 0;
                 btnA = 0;
                 btnDD = 0;
-                btnSpace = 0;
-                seg = 7'b0000001;
-                
             end
             8'b01110011:begin //s
                 btnW = 0;
                 btnS = 1;
                 btnA = 0;
                 btnDD = 0;
-                btnSpace = 0;
-                seg = 7'b0000010;
             end
             8'b01100001:begin //a
                 btnW = 0;
                 btnS = 0;
                 btnA = 1;
                 btnDD = 0;
-                btnSpace = 0;
-                seg = 7'b0000100;
             end
             8'b01100100:begin //d
                 btnW = 0;
                 btnS = 0;
                 btnA = 0;
                 btnDD = 1;
-                btnSpace = 0;
-                seg = 7'b0001000;
             end
 //            8'b01100011:begin //c
 //                ooData=RxData-32;
@@ -474,16 +460,10 @@ begin
 //            end
             8'b00100000:begin //space
                 btnSpace = 1;
-                seg = 7'b0010000;
             end
-            default:begin
-                btnW = 0;
-                btnS = 0;
-                btnA = 0;
-                btnDD = 0;
-                btnSpace = 0;
-//                seg = 7'b0100000;
-            end
+//            default:begin
+//                ooData=0;
+//            end
      endcase
 end
     
