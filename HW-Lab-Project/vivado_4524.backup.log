@@ -1,0 +1,20 @@
+#-----------------------------------------------------------
+# Vivado v2019.2 (64-bit)
+# SW Build 2708876 on Wed Nov  6 21:40:23 MST 2019
+# IP Build 2700528 on Thu Nov  7 00:09:20 MST 2019
+# Start of session at: Wed May 27 02:25:57 2020
+# Process ID: 4524
+# Current directory: C:/Users/d1945/Documents/GitHub/HW-Lab-Project/HW-Lab-Project
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent5300 C:\Users\d1945\Documents\GitHub\HW-Lab-Project\HW-Lab-Project\HW-Lab-Project.xpr
+# Log file: C:/Users/d1945/Documents/GitHub/HW-Lab-Project/HW-Lab-Project/vivado.log
+# Journal file: C:/Users/d1945/Documents/GitHub/HW-Lab-Project/HW-Lab-Project\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project C:/Users/d1945/Documents/GitHub/HW-Lab-Project/HW-Lab-Project/HW-Lab-Project.xpr
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'E:/Xilinx/Vivado/2019.2/data/ip'.
+open_project: Time (s): cpu = 00:00:16 ; elapsed = 00:00:05 . Memory (MB): peak = 707.383 ; gain = 52.398
+update_compile_order -fileset sources_1
