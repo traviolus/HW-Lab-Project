@@ -18,10 +18,10 @@ module top(
     
     reg btnW, btnA, btnS, btnDD, btnSpace;
     
-    assign btnU = btnW;
-    assign btnD = btnS;
-    assign btnL = btnA;
-    assign btnR = btnDD;
+    // assign btnU = btnW;
+    // assign btnD = btnS;
+    // assign btnL = btnA;
+    // assign btnR = btnDD;
 
     wire rst = RST_BTN;  // reset is active high on Basys3 (BTNC)
     
@@ -262,10 +262,10 @@ module top(
         .i_rst(rst),
         .i_animate(animate),
         .i_show(isDodge),
-        .i_up(btnU),
-        .i_down(btnD),
-        .i_left(btnL),
-        .i_right(btnR),
+        .i_up(btnW),
+        .i_down(btnS),
+        .i_left(btnA),
+        .i_right(btnDD),
         .o_xc(s_xc),
         .o_yc(s_yc),
         .o_r(s_r)
@@ -287,7 +287,7 @@ module top(
     begin       
         if (de)
         begin
-            if (isMainMenu & btnU)
+            if (isMainMenu & btnW)
             begin
                 isMainMenu = 0;
                 isActionSelect = 1;
@@ -295,15 +295,15 @@ module top(
             end
             else if (isActionSelect)
             begin
-                if (btnR & selectedAction < 3)
+                if (btnDD & selectedAction < 3)
                 begin
                     selectedAction = selectedAction + 1;
                 end
-                else if (btnL & selectedAction > 0)
+                else if (btnA & selectedAction > 0)
                 begin
                     selectedAction = selectedAction - 1;
                 end
-                else if (btnU & selectedAction == 0)
+                else if (btnW & selectedAction == 0)
                 begin
                     isActionSelect = 0;
                     isFight = 1;
@@ -322,7 +322,7 @@ module top(
                     hpEnemy <= 100;
                     damage <= 0;
                 end
-                if (btnU)
+                if (btnW)
                 begin
                     if ((mf_x1 > ff_x1) & (mf_x2 < ff_x2)) begin
                         if ((mf_x1+mf_x2)/2 >= (ff_x1+ff_x2)/2) begin
@@ -387,7 +387,7 @@ module top(
             damage <= 0;
         end
             
-        if (btnU | btnD | btnL | btnR)
+        if (btnW | btnS | btnA | btnDD)
         begin 
             de = 0;
         end
