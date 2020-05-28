@@ -4,11 +4,12 @@ module mainControl(
     input CLK,
     input wire [10:0] x,
     input wire [9:0] y,
-    input btnW,
-    input btnS,
-    input btnA,
-    input btnDD,
-    input btnSpace,
+    input up,
+    input down,
+    input left,
+    input right,
+    input space,
+    input de,
     input rst,
     input wire [11:0] mf_x1,
     input wire [11:0] mf_x2, 
@@ -62,7 +63,7 @@ module mainControl(
     
     always @ (posedge CLK)
     begin       
-            if (isMainMenu & btnSpace)
+            if (isMainMenu & space)
             begin
                 isMainMenu = 0;
                 isActionSelect = 1;
@@ -72,15 +73,15 @@ module mainControl(
             end
             else if (isActionSelect)
             begin
-                if (btnDD & selectedAction < 3)
+                if (right & selectedAction < 3)
                 begin
                     selectedAction = selectedAction + 1;
                 end
-                else if (btnA & selectedAction > 0)
+                else if (left & selectedAction > 0)
                 begin
                     selectedAction = selectedAction - 1;
                 end
-                else if (btnSpace & selectedAction == 0)
+                else if (space & selectedAction == 0)
                 begin
                     isActionSelect = 0;
                     isFight = 1;
@@ -104,7 +105,7 @@ module mainControl(
                 end else begin
                     damage <= 0;
                 end
-                if (btnSpace)
+                if (space)
                 begin
                     hpEnemy <= hpEnemy - damage;
                     isFight = 0;
@@ -126,14 +127,15 @@ module mainControl(
                     isDodge = 0;
                     selectedAction = 0;
                 end
-                if (btnW & s_yc-15>100) begin
-                    s_yc <= s_yc - 6;
-                end else if (btnS & s_yc+15<400) begin
-                    s_yc <= s_yc + 6;
-                end else if (btnA & s_xc-15>250) begin
-                    s_xc <= s_xc - 6;
-                end else if (btnDD & s_xc+15<550) begin
-                    s_xc <= s_xc + 6;
+                
+                if (up & s_yc-15>100) begin
+                    s_yc <= s_yc - 8;
+                end else if (down & s_yc+15<400) begin
+                    s_yc <= s_yc + 8;
+                end else if (left & s_xc-15>250) begin
+                    s_xc <= s_xc - 8;
+                end else if (right & s_xc+15<550) begin
+                    s_xc <= s_xc + 8;
                 end
                 if (ready)
                 begin

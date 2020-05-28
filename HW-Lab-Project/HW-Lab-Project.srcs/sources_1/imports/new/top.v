@@ -7,9 +7,11 @@ module top(
 //    input wire btnD,            // down button
 //    input wire btnL,            // left button
 //    input wire btnR,            // right button
+    input PS2Data,
+    input PS2Clk,
     input wire RxD,             // UART
     output wire TxD,            // UART
-    output [7:0]RxData,
+    output wire [15:0] led,
     output wire VGA_HS_O,       // horizontal sync output
     output wire VGA_VS_O,       // vertical sync output
     output reg [3:0] VGA_R,     // 4-bit VGA red output
@@ -21,19 +23,12 @@ module top(
     );
     
     //input
-    wire btnW, btnA, btnS, btnDD, btnSpace;
-    wire btnrW, btnrA, btnrS, btnrDD, btnrSpace;
-    
-    receiver R1 (CLK, RST_BTN,RxD,RxData,TxD);
-    RxData2Key rxdata2key (RxData,btnrW,btnrS,btnrA,btnrDD,btnrSpace);
-    
-    debouncer debtnW (CLK, btnrW, btnW);
-    debouncer debtnA (CLK, btnrA, btnA);
-    debouncer debtnS (CLK, btnrS, btnS);
-    debouncer debtnDD (CLK, btnrDD, btnDD);
-    debouncer debtnSpace (CLK, btnrSpace, btnSpace);
-
     wire rst = RST_BTN;  // reset is active high on Basys3 (BTNC)
+    wire [15:0] keycode;
+    wire up,down,left,right,space,de;
+    assign led = keycode;
+    receiver_keyboard recv_kb (CLK,PS2Data,PS2Clk,TxD,keycode);
+    keyboard_input_ctrl(CLK,keycode,up,down,left,right,space,de);
     
     reg [15:0] cnt;
     reg pix_stb;
@@ -260,11 +255,12 @@ module top(
         .CLK(CLK),
         .x(x),
         .y(y),
-        .btnW(btnW),
-        .btnS(btnS),
-        .btnA(btnA),
-        .btnDD(btnDD),
-        .btnSpace(btnSpace),
+        .up(up),
+        .down(down),
+        .left(left),
+        .right(right),
+        .space(space),
+        .de(de),
         .rst(rst),
         .mf_x1(mf_x1),
         .mf_x2(mf_x2),
