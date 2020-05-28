@@ -2,8 +2,6 @@
 
 module mainControl(
     input CLK,
-    input wire [10:0] x,
-    input wire [9:0] y,
     input up,
     input down,
     input left,
@@ -12,7 +10,8 @@ module mainControl(
     input de,
     input rst,
     input wire [11:0] mf_x1,
-    input wire [11:0] mf_x2, 
+    input wire [11:0] mf_x2,
+    input soulCr,
     input bullet1Cr,
     input bullet2Cr,
     input bullet3Cr,
@@ -25,15 +24,11 @@ module mainControl(
     output reg isDodge,
     output reg isShowb1,
     output reg isShowb2,
-    output reg isShowb3,
-    output wire soulCr
+    output reg isShowb3
     );
     
     reg [5:0] damage;
     wire [11:0] mf_xc = (mf_x1+mf_x2) / 2; // center of move gauge
-    reg [11:0] s_xc;
-    reg [11:0] s_yc;
-    reg [11:0] s_r = 15;
        
     initial begin
         isMainMenu = 1; //change to 1 if project finish 
@@ -46,8 +41,6 @@ module mainControl(
         isShowb1 = 1;
         isShowb2 = 1;
         isShowb3 = 1;
-        s_xc = 400;
-        s_yc = 250;
     end
 
     //Counter
@@ -58,8 +51,6 @@ module mainControl(
         .i_signal(isDodge),
         .o_ready(ready)
     );
-    
-    assign soulCr = isDodge & ((((x-s_xc)**2) + ((y-s_yc)**2) < s_r**2) & (x < s_xc + s_r) & (x > s_xc - s_r) & (y < s_yc + s_r) & (y > s_yc - s_r)) ? 1 : 0;
     
     always @ (posedge CLK)
     begin       
@@ -113,8 +104,6 @@ module mainControl(
                     isShowb1 = 1;
                     isShowb2 = 1;
                     isShowb3 = 1;
-                    s_xc = 400;
-                    s_yc = 250; 
                 end
             end
             else if (isDodge)
@@ -126,16 +115,6 @@ module mainControl(
                     isFight = 0;
                     isDodge = 0;
                     selectedAction = 0;
-                end
-                
-                if (up & s_yc-15>100) begin
-                    s_yc <= s_yc - 8;
-                end else if (down & s_yc+15<400) begin
-                    s_yc <= s_yc + 8;
-                end else if (left & s_xc-15>250) begin
-                    s_xc <= s_xc - 8;
-                end else if (right & s_xc+15<550) begin
-                    s_xc <= s_xc + 8;
                 end
                 if (ready)
                 begin

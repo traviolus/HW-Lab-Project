@@ -248,13 +248,30 @@ module top(
     assign bulletCr = (bullet1Cr | bullet2Cr | bullet3Cr);
     
     ///Soul
+    wire [11:0] s_xc, s_yc, s_r;
     wire soulCr;
+    
+    Soul #(.IX(400), .IY(250), .SPEED(4)) soul (
+        .i_clk(CLK), 
+        .i_ani_stb(pix_stb),
+        .i_rst(rst),
+        .i_animate(animate),
+        .i_show(isDodge),
+        .i_up(up),
+        .i_down(down),
+        .i_left(left),
+        .i_right(right),
+        .i_de(de),
+        .o_xc(s_xc),
+        .o_yc(s_yc),
+        .o_r(s_r)
+    );
+    
+    assign soulCr = ((((x-s_xc)**2) + ((y-s_yc)**2) < s_r**2) & (x < s_xc + s_r) & (x > s_xc - s_r) & (y < s_yc + s_r) & (y > s_yc - s_r))  ? 1 : 0;
         
     //Main Control
     mainControl ctrl(
         .CLK(CLK),
-        .x(x),
-        .y(y),
         .up(up),
         .down(down),
         .left(left),
@@ -264,6 +281,7 @@ module top(
         .rst(rst),
         .mf_x1(mf_x1),
         .mf_x2(mf_x2),
+        .soulCr(soulCr),
         .bullet1Cr(bullet1Cr),
         .bullet2Cr(bullet2Cr),
         .bullet3Cr(bullet3Cr),
@@ -276,8 +294,7 @@ module top(
         .isDodge(isDodge),
         .isShowb1(isShowb1),
         .isShowb2(isShowb2),
-        .isShowb3(isShowb3),
-        .soulCr(soulCr)
+        .isShowb3(isShowb3)
     ); 
     
     // Display
