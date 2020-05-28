@@ -18,7 +18,6 @@ module Soul #(
     input wire i_down,
     input wire i_left,
     input wire i_right,
-    input wire i_de,
     output wire [11:0] o_xc,  // x center value
     output wire [11:0] o_yc,  // y center value
     output wire [11:0] o_r    // radius value
@@ -26,7 +25,6 @@ module Soul #(
 
     reg [11:0] x = IX;   // horizontal position of square centre
     reg [11:0] y = IY;   // vertical position of square centre
-    reg up,down,left,right;
 
     assign o_xc = i_show ? x : 0;   
     assign o_yc = i_show ? y : 0;
@@ -39,22 +37,15 @@ module Soul #(
             x <= IX;
             y <= IY;
         end
-        
-        if (i_up) up=1;
-        else if (i_down) down=1;
-        else if (i_left) left=1;
-        else if (i_right) right=1;
-        if (i_de) begin up=0;down=0;left=0;right=0; end
-        
         if (i_animate && i_ani_stb)
         begin
-            if (x >= D_LEFT + RADIUS + 1 & left)
+            if (x >= D_LEFT + RADIUS + 1 & i_left)
                 x <= x - SPEED;
-            if (x <= D_RIGHT - RADIUS - 1 & right)
+            if (x <= D_RIGHT - RADIUS - 1 & i_right)
                 x <= x + SPEED;      
-            if (y >= D_TOP + RADIUS + 1 & up)
+            if (y >= D_TOP + RADIUS + 1 & i_up)
                 y <= y - SPEED; 
-            if (y <= D_BOTTOM - RADIUS - 1 & down)
+            if (y <= D_BOTTOM - RADIUS - 1 & i_down)
                 y <= y + SPEED;               
         end
     end

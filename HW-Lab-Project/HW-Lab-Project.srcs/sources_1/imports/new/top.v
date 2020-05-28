@@ -25,10 +25,10 @@ module top(
     //input
     wire rst = RST_BTN;  // reset is active high on Basys3 (BTNC)
     wire [15:0] keycode;
-    wire up,down,left,right,space,de;
+    wire up,down,left,right,space,ups,downs,lefts,rights;
     assign led = keycode;
     receiver_keyboard recv_kb (CLK,PS2Data,PS2Clk,TxD,keycode);
-    keyboard_input_ctrl(CLK,keycode,up,down,left,right,space,de);
+    keyboard_input_ctrl(CLK,keycode,up,down,left,right,space,ups,downs,lefts,rights);
     
     reg [15:0] cnt;
     reg pix_stb;
@@ -221,7 +221,7 @@ module top(
         .o_yc(b1_yc),
         .o_r(b1_r)
     );
-    Bullet #(.IX(400), .IY(350), .IX_DIR(0), .X_SPEED(5), .Y_SPEED(3)) bullet2 (
+    Bullet #(.IX(450), .IY(150), .IX_DIR(0), .X_SPEED(5), .Y_SPEED(3)) bullet2 (
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
         .i_rst(rst),
@@ -231,7 +231,7 @@ module top(
         .o_yc(b2_yc),
         .o_r(b2_r)
     );
-    Bullet #(.IX(500), .IY(300), .IY_DIR(0), .X_SPEED(4), .Y_SPEED(7)) bullet3 (
+    Bullet #(.IX(500), .IY(350), .IY_DIR(0), .X_SPEED(4), .Y_SPEED(7)) bullet3 (
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
         .i_rst(rst),
@@ -254,14 +254,13 @@ module top(
     Soul #(.IX(400), .IY(250), .SPEED(4)) soul (
         .i_clk(CLK), 
         .i_ani_stb(pix_stb),
-        .i_rst(rst),
+        .i_rst(rst | isFight),
         .i_animate(animate),
         .i_show(isDodge),
-        .i_up(up),
-        .i_down(down),
-        .i_left(left),
-        .i_right(right),
-        .i_de(de),
+        .i_up(ups),
+        .i_down(downs),
+        .i_left(lefts),
+        .i_right(rights),
         .o_xc(s_xc),
         .o_yc(s_yc),
         .o_r(s_r)
@@ -277,7 +276,6 @@ module top(
         .left(left),
         .right(right),
         .space(space),
-        .de(de),
         .rst(rst),
         .mf_x1(mf_x1),
         .mf_x2(mf_x2),
