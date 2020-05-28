@@ -20,7 +20,4 @@ module ActionSelect#(
     assign o_xc = i_show ? x + i_selectedAction*150 : 0;   
     assign o_yc = i_show ? y : 0;
     assign o_r = i_show ? H_SIZE : 0;
-
-
-
 endmodule

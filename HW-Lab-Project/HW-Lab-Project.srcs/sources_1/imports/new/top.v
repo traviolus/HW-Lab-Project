@@ -253,29 +253,13 @@ module top(
     assign bulletCr = (bullet1Cr | bullet2Cr | bullet3Cr);
     
     ///Soul
-    wire [11:0] s_xc, s_yc, s_r;
     wire soulCr;
-    
-    Soul #(.IX(400), .IY(250), .SPEED(4)) soul (
-        .i_clk(CLK), 
-        .i_ani_stb(pix_stb),
-        .i_rst(rst),
-        .i_animate(animate),
-        .i_show(isDodge),
-        .i_up(btnrW),
-        .i_down(btnrS),
-        .i_left(btnrA),
-        .i_right(btnrDD),
-        .o_xc(s_xc),
-        .o_yc(s_yc),
-        .o_r(s_r)
-    );
-    
-    assign soulCr = ((((x-s_xc)**2) + ((y-s_yc)**2) < s_r**2) & (x < s_xc + s_r) & (x > s_xc - s_r) & (y < s_yc + s_r) & (y > s_yc - s_r))  ? 1 : 0;
-    
-    //Main Controll
+        
+    //Main Control
     mainControl ctrl(
         .CLK(CLK),
+        .x(x),
+        .y(y),
         .btnW(btnW),
         .btnS(btnS),
         .btnA(btnA),
@@ -283,8 +267,7 @@ module top(
         .btnSpace(btnSpace),
         .rst(rst),
         .mf_x1(mf_x1),
-        .mf_x2(mf_x2), 
-        .soulCr(soulCr),
+        .mf_x2(mf_x2),
         .bullet1Cr(bullet1Cr),
         .bullet2Cr(bullet2Cr),
         .bullet3Cr(bullet3Cr),
@@ -297,7 +280,8 @@ module top(
         .isDodge(isDodge),
         .isShowb1(isShowb1),
         .isShowb2(isShowb2),
-        .isShowb3(isShowb3)
+        .isShowb3(isShowb3),
+        .soulCr(soulCr)
     ); 
     
     // Display
@@ -305,12 +289,10 @@ module top(
     begin
         if (isMainMenu == 1) begin
             address <= y * SCREEN_WIDTH + x;
-    
             if (active)
                 colour <= palette[dataout];
             else    
                 colour <= 0;
-    
             VGA_R <= colour[11:8];
             VGA_G <= colour[7:4];
             VGA_B <= colour[3:0];
