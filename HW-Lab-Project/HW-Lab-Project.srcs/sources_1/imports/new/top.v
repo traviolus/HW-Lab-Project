@@ -21,35 +21,17 @@ module top(
     );
     
     wire btnW, btnA, btnS, btnDD, btnSpace;
-    reg btnrW, btnrA, btnrS, btnrDD, btnrSpace;
+    wire btnrW, btnrA, btnrS, btnrDD, btnrSpace;
+    wire btnW2, btnA2, btnS2, btnDD2, btnSpace2;
     
-    assign btnW = btnrW ? 1 : 0;
-    assign btnA = btnrA ? 1 : 0;
-    assign btnS = btnrS ? 1 : 0;
-    assign btnDD = btnrDD ? 1 : 0;
-    assign btnSpace = btnrSpace ? 1 : 0;
+    receiver R1 (CLK, RST_BTN,RxD,RxData,TxD);
+    RxData2Key rxdata2key (RxData,btnrW,btnrS,btnrA,btnrDD,btnrSpace);
     
-    
-//    always@(*)
-//    begin
-    
-//        btnW = btnrW;
-//        btnA = btnrA;
-//        btnS = btnrS;
-//        btnDD = btnrDD;
-//        btnSpace = btnrSpace;
-//    end
-    
-//    assign btnrW = btnW;
-//    assign btnrA = btnA;
-//    assign btnrS = btnS;
-//    assign btnrDD = btnDD;
-//    assign btnrSpace = btnSpace;
-    
-    // assign btnU = btnW;
-    // assign btnD = btnS;
-    // assign btnL = btnA;
-    // assign btnR = btnDD;
+    debouncer debtnW (CLK, btnrW, btnW);
+    debouncer debtnA (CLK, btnrA, btnA);
+    debouncer debtnS (CLK, btnrS, btnS);
+    debouncer debtnDD (CLK, btnrDD, btnDD);
+    debouncer debtnSpace (CLK, btnrSpace, btnSpace);
 
     wire rst = RST_BTN;  // reset is active high on Basys3 (BTNC)
     
@@ -290,10 +272,10 @@ module top(
         .i_rst(rst),
         .i_animate(animate),
         .i_show(isDodge),
-        .i_up(btnW),
-        .i_down(btnS),
-        .i_left(btnA),
-        .i_right(btnDD),
+        .i_up(btnrW),
+        .i_down(btnrS),
+        .i_left(btnrA),
+        .i_right(btnrDD),
         .o_xc(s_xc),
         .o_yc(s_yc),
         .o_r(s_r)
@@ -313,8 +295,6 @@ module top(
     
     always @ (posedge CLK)
     begin       
-        if (de)
-        begin
             if (isMainMenu & btnSpace)
             begin
                 isMainMenu = 0;
@@ -369,7 +349,7 @@ module top(
             end
             else if (isDodge)
             begin
-                if (hpHero <= 0 | hpHero > 100)
+                if (hpHero <= 0 | hpHero > 100 | hpEnemy <= 0 | hpEnemy > 100)
                 begin
                     isMainMenu = 1;
                     isActionSelect = 0;
@@ -401,7 +381,6 @@ module top(
                     hpHero = hpHero - 10;
                 end
             end
-        end
         
         if (rst)
         begin
@@ -413,17 +392,7 @@ module top(
             hpHero <= 100;
             hpEnemy <= 100;
             damage <= 0;
-        end
-            
-        if (btnW | btnS | btnA | btnDD)
-        begin 
-            de = 0;
-        end
-        else
-        begin
-            de = 1;
-        end
-        
+        end   
     end
     
     // Display
@@ -447,71 +416,4 @@ module top(
             VGA_B <= (moveFightGaugeSq | dodgeFrameSq | bulletCr) ? 4'hF:4'h0;
         end
     end
-    
-    receiver R1 (CLK, RST_BTN,RxD,RxData,TxD);
-    
-    always @(*)
-begin
-    case (RxData)
-            8'b01110111:begin //w
-                btnrW = 1;
-                btnrS = 0;
-                btnrA = 0;
-                btnrDD = 0;
-                btnrSpace = 0;
-                seg = 7'b0000001;
-                
-            end
-            8'b01110011:begin //s
-                btnrW = 0;
-                btnrS = 1;
-                btnrA = 0;
-                btnrDD = 0;
-                btnrSpace = 0;
-                seg = 7'b0000010;
-            end
-            8'b01100001:begin //a
-                btnrW = 0;
-                btnrS = 0;
-                btnrA = 1;
-                btnrDD = 0;
-                btnrSpace = 0;
-                seg = 7'b0000100;
-            end
-            8'b01100100:begin //d
-                btnrW = 0;
-                btnrS = 0;
-                btnrA = 0;
-                btnrDD = 1;
-                btnrSpace = 0;
-                seg = 7'b0001000;
-            end
-//            8'b01100011:begin //c
-//                ooData=RxData-32;
-//            end
-//            8'b01101101:begin //m
-//                ooData=RxData-32;
-//            end
-//            8'b01111001:begin //y
-//                ooData=RxData-32;
-//            end
-            8'b00100000:begin //space
-                btnrW = 0;
-                btnrS = 0;
-                btnrA = 0;
-                btnrDD = 0;
-                btnrSpace = 1;
-                seg = 7'b0010000;
-            end
-            default:begin
-                btnrW = 0;
-                btnrS = 0;
-                btnrA = 0;
-                btnrDD = 0;
-                btnrSpace = 0;
-//                seg = 7'b0100000;
-            end
-     endcase
-end
-    
 endmodule
