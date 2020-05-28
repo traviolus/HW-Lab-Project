@@ -20,9 +20,9 @@ module top(
     output [3:0] an
     );
     
+    //input
     wire btnW, btnA, btnS, btnDD, btnSpace;
     wire btnrW, btnrA, btnrS, btnrDD, btnrSpace;
-    wire btnW2, btnA2, btnS2, btnDD2, btnSpace2;
     
     receiver R1 (CLK, RST_BTN,RxD,RxData,TxD);
     RxData2Key rxdata2key (RxData,btnrW,btnrS,btnrA,btnrDD,btnrSpace);
@@ -87,18 +87,10 @@ module top(
         $readmemh("basys_palette.mem", palette);  // bitmap palette to load
     end
     
-    // varible declare
-    reg isMainMenu = 0; //change to 1 if project finish 
-    reg isActionSelect = 0; //change to 0 if project finish 
-    reg isFight = 0; //change to 0 if project finish 
-    reg isDodge = 1; //change to 0 if project finish 
-    
-    reg de = 1;
-    reg [6:0] hpHero = 100;
-    reg [6:0] hpEnemy = 100;
-    reg [4:0] damage = 0;
-    reg [1:0] selectedAction = 2'b00;
-    reg [29:0] timer;
+    wire isMainMenu,isActionSelect,isFight,isDodge;
+    wire [2:0] selectedAction;
+    wire [7:0] hpHero;
+    wire [7:0] hpEnemy;
     
     //action select display
     wire [11:0] actsel_xc, actsel_yc, actsel_r;
@@ -151,7 +143,7 @@ module top(
     wire [11:0] mf_x1, mf_x2, mf_y1, mf_y2;
     wire fixFightGaugeSq, moveFightGaugeSq;
     
-    square #(.H_WIDTH(20), .H_HEIGHT(20), .IX(400), .IY(350)) fixFightGauge (
+    square #(.H_WIDTH(40), .H_HEIGHT(15), .IX(400), .IY(350)) fixFightGauge (
         .i_show(isFight),
         .o_x1(ff_x1),
         .o_x2(ff_x2),
@@ -222,9 +214,7 @@ module top(
     wire [11:0] b2_xc, b2_yc, b2_r;
     wire [11:0] b3_xc, b3_yc, b3_r;
     wire bullet1Cr, bullet2Cr, bullet3Cr, bulletCr;
-    reg isShowb1 = 1;
-    reg isShowb2 = 1;
-    reg isShowb3 = 1;
+    wire isShowb1,isShowb2,isShowb3;
     
     Bullet #(.IX(300), .IY(300), .X_SPEED(4), .Y_SPEED(2)) bullet1 (
         .i_clk(CLK), 
@@ -283,117 +273,32 @@ module top(
     
     assign soulCr = ((((x-s_xc)**2) + ((y-s_yc)**2) < s_r**2) & (x < s_xc + s_r) & (x > s_xc - s_r) & (y < s_yc + s_r) & (y > s_yc - s_r))  ? 1 : 0;
     
-    //Counter
-    wire ready;
-    
-    counter (
-        .i_clk(CLK),
-        .i_reset(isActionSelect),
-        .i_signal(isDodge),
-        .o_ready(ready)
-    );
-    
-    always @ (posedge CLK)
-    begin       
-            if (isMainMenu & btnSpace)
-            begin
-                isMainMenu = 0;
-                isActionSelect = 1;
-                selectedAction = 0;
-            end
-            else if (isActionSelect)
-            begin
-                if (btnDD & selectedAction < 3)
-                begin
-                    selectedAction = selectedAction + 1;
-                end
-                else if (btnA & selectedAction > 0)
-                begin
-                    selectedAction = selectedAction - 1;
-                end
-                else if (btnSpace & selectedAction == 0)
-                begin
-                    isActionSelect = 0;
-                    isFight = 1;
-                end
-            end
-            else if (isFight)
-            begin
-                if (hpEnemy <= 0 | hpEnemy > 100)
-                begin
-                    isMainMenu = 1;
-                    isActionSelect = 0;
-                    isFight = 0;
-                    isDodge = 0;
-                    selectedAction = 0;
-                    hpHero <= 100;
-                    hpEnemy <= 100;
-                    damage <= 0;
-                end
-                if (btnSpace)
-                begin
-                    if ((mf_x1 > ff_x1) & (mf_x2 < ff_x2)) begin
-                        if ((mf_x1+mf_x2)/2 >= (ff_x1+ff_x2)/2) begin
-                            damage = (10-(((mf_x1+mf_x2)/2)-((ff_x1+ff_x2)/2)))*5;
-                        end else begin
-                            damage = (10-(((ff_x1+ff_x2)/2)-((mf_x1+mf_x2)/2)))*5;
-                        end
-                    end
-                    hpEnemy = hpEnemy - damage;
-                    isFight = 0;
-                    isDodge = 1;
-                    isShowb1 = 1;
-                    isShowb2 = 1;
-                    isShowb3 = 1;
-                end
-            end
-            else if (isDodge)
-            begin
-                if (hpHero <= 0 | hpHero > 100 | hpEnemy <= 0 | hpEnemy > 100)
-                begin
-                    isMainMenu = 1;
-                    isActionSelect = 0;
-                    isFight = 0;
-                    isDodge = 0;
-                    selectedAction = 0;
-                    hpHero <= 100;
-                    hpEnemy <= 100;
-                    damage <= 0;
-                end
-                if (ready)
-                begin
-                    isDodge = 0;
-                    isActionSelect = 1;
-                end
-                if (soulCr & bullet1Cr)
-                begin
-                    isShowb1 = 0;
-                    hpHero = hpHero - 10;
-                end
-                if (soulCr & bullet2Cr)
-                begin
-                    isShowb2 = 0;
-                    hpHero = hpHero - 10;
-                end
-                if (soulCr & bullet3Cr)
-                begin
-                    isShowb3 = 0;
-                    hpHero = hpHero - 10;
-                end
-            end
-        
-        if (rst)
-        begin
-            isMainMenu = 1;
-            isActionSelect = 0;
-            isFight = 0;
-            isDodge = 0;
-            selectedAction = 0;
-            hpHero <= 100;
-            hpEnemy <= 100;
-            damage <= 0;
-        end   
-    end
+    //Main Controll
+    mainControl ctrl(
+        .CLK(CLK),
+        .btnW(btnW),
+        .btnS(btnS),
+        .btnA(btnA),
+        .btnDD(btnDD),
+        .btnSpace(btnSpace),
+        .rst(rst),
+        .mf_x1(mf_x1),
+        .mf_x2(mf_x2), 
+        .soulCr(soulCr),
+        .bullet1Cr(bullet1Cr),
+        .bullet2Cr(bullet2Cr),
+        .bullet3Cr(bullet3Cr),
+        .selectedAction(selectedAction),
+        .hpHero(hpHero),
+        .hpEnemy(hpEnemy),
+        .isMainMenu(isMainMenu),
+        .isActionSelect(isActionSelect),
+        .isFight(isFight),
+        .isDodge(isDodge),
+        .isShowb1(isShowb1),
+        .isShowb2(isShowb2),
+        .isShowb3(isShowb3)
+    ); 
     
     // Display
     always @ (posedge CLK)

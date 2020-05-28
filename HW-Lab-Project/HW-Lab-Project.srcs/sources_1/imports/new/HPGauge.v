@@ -10,7 +10,7 @@ module HPGauge #(
     input wire i_clk,         // base clock
     input wire i_ani_stb,     // animation clock: pixel clock is 1 pix/frame
     input wire i_rst,         // reset: returns animation to starting position
-    input wire [6:0] i_hp,    // HP
+    input wire [7:0] i_hp,    // HP
     output wire [11:0] o_x1,  // square left edge: 12-bit value: 0-4095
     output wire [11:0] o_x2,  // square right edge
     output wire [11:0] o_y1,  // square top edge
