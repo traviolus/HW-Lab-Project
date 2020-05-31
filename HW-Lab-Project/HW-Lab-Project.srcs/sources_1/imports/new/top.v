@@ -16,10 +16,7 @@ module top(
     output wire VGA_VS_O,       // vertical sync output
     output reg [3:0] VGA_R,     // 4-bit VGA red output
     output reg [3:0] VGA_G,     // 4-bit VGA green output
-    output reg [3:0] VGA_B,      // 4-bit VGA blue output
-    output reg [6:0] seg,
-    output dp,
-    output [3:0] an
+    output reg [3:0] VGA_B      // 4-bit VGA blue output
     );
     
     //input
